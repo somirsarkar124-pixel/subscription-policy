@@ -6,54 +6,79 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
-      font-family: Arial, sans-serif;
-      padding: 30px;
-      background-color: #f9f9f9;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #e4ebf1);
+      margin: 0;
+      padding: 20px;
       color: #333;
     }
 
-    h1, h2 {
+    h1 {
       text-align: center;
-      color: #2c3e50;
+      color: #2d3436;
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+    }
+
+    .sub-heading {
+      text-align: center;
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 30px;
     }
 
     table {
-      margin: 20px auto;
+      margin: 0 auto;
       border-collapse: collapse;
       width: 90%;
-      max-width: 600px;
-      background-color: #fff;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 500px;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     }
 
     th, td {
       padding: 15px;
       text-align: center;
-      border: 1px solid #ddd;
     }
 
     th {
-      background-color: #4CAF50;
+      background: #00b894;
       color: white;
+      font-size: 1.1rem;
     }
 
-    .notice, .example, .reminder, .payment, .limit {
-      background-color: #fff;
-      border-left: 5px solid #4CAF50;
-      margin: 20px auto;
+    tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+
+    tr:nth-child(odd) {
+      background: #ffffff;
+    }
+
+    .card {
+      background: white;
+      border-left: 6px solid #00b894;
       padding: 20px;
-      max-width: 700px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.05);
+      margin: 20px auto;
+      max-width: 800px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+      border-radius: 10px;
+    }
+
+    .card h2 {
+      color: #2d3436;
+      margin-bottom: 10px;
     }
 
     .highlight {
-      color: red;
+      color: #e74c3c;
       font-weight: bold;
     }
 
     .telegram-link {
-      display: block;
-      text-align: center;
+      display: flex;
+      justify-content: center;
       margin-top: 30px;
     }
 
@@ -64,100 +89,114 @@
       border-radius: 8px;
       text-decoration: none;
       font-size: 16px;
-      transition: background-color 0.3s ease;
+      transition: background 0.3s ease;
     }
 
     .telegram-link a:hover {
       background-color: #0077b3;
     }
 
-    .copy-btn {
-      background-color: #4CAF50;
+    .payment-box {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .pay-btn {
+      background: #ff7675;
       color: white;
+      padding: 12px 20px;
       border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 15px;
+      transition: background 0.3s ease;
     }
 
-    .copy-btn:hover {
-      background-color: #45a049;
+    .pay-btn:hover {
+      background: #d63031;
     }
 
-    @media (max-width: 600px) {
-      body {
-        padding: 15px;
-      }
+    .copy-field {
+      margin-top: 15px;
+      background: #f1f2f6;
+      padding: 10px;
+      border-radius: 6px;
+      display: inline-block;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .copy-field:hover {
+      background: #dfe6e9;
     }
   </style>
 </head>
 <body>
 
   <h1>🔐 Subscription Plans</h1>
+  <p class="sub-heading">Flexible Plans • Fair Usage • Secure Access</p>
 
   <table>
     <tr>
       <th>Duration</th>
       <th>Price</th>
-      <th>2 Devices Price</th>
+      <th>Daily Limit</th>
     </tr>
     <tr>
       <td>📅 1 Month</td>
       <td>$20</td>
-      <td>$30</td>
+      <td>2000/day</td>
     </tr>
     <tr>
       <td>📅 3 Months</td>
       <td>$55</td>
-      <td>$75</td>
+      <td>Unlimited</td>
     </tr>
     <tr>
       <td>📅 6 Months</td>
       <td>$100</td>
-      <td>$140</td>
+      <td>Unlimited</td>
     </tr>
   </table>
 
-  <div class="limit">
-    <h2>📊 Data Check Limit</h2>
-    <p>প্রতি দিনে সর্বোচ্চ <strong>400</strong> ডাটা চেক করা যাবে।</p>
-    <p>লিমিট বাড়াতে চাইলে প্রতি <strong>200</strong> ডাটার জন্য <strong>$5</strong> চার্জ প্রযোজ্য।</p>
-  </div>
-
-  <div class="notice">
+  <div class="card">
     <h2>⚠️ Important Policy – One Device Only</h2>
     <p>
-      আপনার <strong>activation key</strong> শুধুমাত্র <span class="highlight">একটি ডিভাইসের</span> জন্য বৈধ।
-      যদি একাধিক ডিভাইসে ব্যবহার করা হয়, তাহলে key <span class="highlight">স্বয়ংক্রিয়ভাবে ডিঅ্যাক্টিভেট</span> হবে।
+      Your <strong>activation key</strong> is valid for <span class="highlight">one device only</span>.
+      If used on more than one device, the key will be <span class="highlight">automatically deactivated</span>.
     </p>
     <ul>
-      <li>সাবস্ক্রিপশন <strong>ক্যানসেল</strong> হয়ে যাবে</li>
-      <li>পেমেন্ট <strong>ফেরত দেওয়া হবে না</strong></li>
+      <li>Subscription will be <strong>canceled</strong></li>
+      <li>Payment will be <strong>forfeited</strong> (no refund)</li>
     </ul>
   </div>
 
-  <div class="example">
+  <div class="card">
+    <h2>🌐 Data Limit Policy</h2>
+    <p>
+      - 1 Month plan: <strong>2000 checks/day</strong><br/>
+      - 3 Months & 6 Months plans: <strong>Unlimited checks/day</strong>
+    </p>
+  </div>
+
+  <div class="card">
     <h2>✅ Example Scenario</h2>
     <p>
-      আপনি যদি আপনার ফোনে key অ্যাক্টিভ করেন, এবং পরে অন্য ডিভাইসে (যেমন ট্যাবলেট বা দ্বিতীয় ফোন) একই key ব্যবহার করতে চান,
-      তাহলে সিস্টেম সেটি শনাক্ত করে <span class="highlight">key নিষ্ক্রিয়</span> করে দেবে এবং পেমেন্ট বাতিল হয়ে যাবে।
+      You activate your key on your phone.<br/>
+      Trying to use it on another device will <span class="highlight">disable your key</span> & payment will be void.
     </p>
   </div>
 
-  <div class="reminder">
-    <h2>🌐 Friendly Reminder</h2>
-    <p>
-      এই পলিসি সঠিক ব্যবহার নিশ্চিত করে এবং সবার জন্য ভালো সার্ভিস বজায় রাখে।<br/>
-      একাধিক ডিভাইসে ব্যবহার করতে চাইলে <strong>সাপোর্টে যোগাযোগ</strong> করুন।
-    </p>
-  </div>
-
-  <div class="payment">
-    <h2>💳 Payment Information</h2>
-    <p><strong>Network:</strong> BEP20</p>
-    <p><strong>Address:</strong> <span id="wallet">0x191d366e8bb26219179897e71f620ad403819208</span></p>
-    <button class="copy-btn" onclick="copyAddress()">📋 Copy Address</button>
+  <div class="card">
+    <h2>💳 Payment</h2>
+    <div class="payment-box">
+      <button class="pay-btn" onclick="showPayment()">Show Payment Address</button>
+      <div id="payment-details" style="display:none;">
+        <div class="copy-field" onclick="copyToClipboard('0x191d366e8bb26219179897e71f620ad403819208')">
+          BEP20 Address: 0x191d366e8bb26219179897e71f620ad403819208
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="telegram-link">
@@ -165,10 +204,13 @@
   </div>
 
   <script>
-    function copyAddress() {
-      const address = document.getElementById("wallet").innerText;
-      navigator.clipboard.writeText(address).then(() => {
-        alert("Wallet address copied!");
+    function showPayment() {
+      document.getElementById('payment-details').style.display = 'block';
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Payment address copied!");
       });
     }
   </script>
