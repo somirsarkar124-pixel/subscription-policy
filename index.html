@@ -11,28 +11,33 @@
       background-color: #f9f9f9;
       color: #333;
     }
+
     h1, h2 {
       text-align: center;
       color: #2c3e50;
     }
+
     table {
       margin: 20px auto;
       border-collapse: collapse;
-      width: 80%;
-      max-width: 400px;
+      width: 90%;
+      max-width: 600px;
       background-color: #fff;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
+
     th, td {
       padding: 15px;
       text-align: center;
       border: 1px solid #ddd;
     }
+
     th {
       background-color: #4CAF50;
       color: white;
     }
-    .notice, .example, .reminder, .payment-box {
+
+    .notice, .example, .reminder, .payment, .limit {
       background-color: #fff;
       border-left: 5px solid #4CAF50;
       margin: 20px auto;
@@ -40,15 +45,18 @@
       max-width: 700px;
       box-shadow: 0 0 8px rgba(0,0,0,0.05);
     }
+
     .highlight {
       color: red;
       font-weight: bold;
     }
+
     .telegram-link {
       display: block;
       text-align: center;
       margin-top: 30px;
     }
+
     .telegram-link a {
       background-color: #0088cc;
       color: white;
@@ -58,25 +66,25 @@
       font-size: 16px;
       transition: background-color 0.3s ease;
     }
+
     .telegram-link a:hover {
       background-color: #0077b3;
     }
-    .pay-btn, .copy-btn {
+
+    .copy-btn {
       background-color: #4CAF50;
       color: white;
-      padding: 10px 15px;
       border: none;
-      border-radius: 5px;
+      padding: 10px 20px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 14px;
-      margin-top: 10px;
     }
-    .pay-btn:hover, .copy-btn:hover {
+
+    .copy-btn:hover {
       background-color: #45a049;
     }
-    .hidden {
-      display: none;
-    }
+
     @media (max-width: 600px) {
       body {
         padding: 15px;
@@ -92,62 +100,64 @@
     <tr>
       <th>Duration</th>
       <th>Price</th>
+      <th>2 Devices Price</th>
     </tr>
     <tr>
       <td>📅 1 Month</td>
       <td>$20</td>
+      <td>$30</td>
     </tr>
     <tr>
       <td>📅 3 Months</td>
       <td>$55</td>
+      <td>$75</td>
     </tr>
     <tr>
       <td>📅 6 Months</td>
       <td>$100</td>
+      <td>$140</td>
     </tr>
   </table>
+
+  <div class="limit">
+    <h2>📊 Data Check Limit</h2>
+    <p>প্রতি দিনে সর্বোচ্চ <strong>400</strong> ডাটা চেক করা যাবে।</p>
+    <p>লিমিট বাড়াতে চাইলে প্রতি <strong>200</strong> ডাটার জন্য <strong>$5</strong> চার্জ প্রযোজ্য।</p>
+  </div>
 
   <div class="notice">
     <h2>⚠️ Important Policy – One Device Only</h2>
     <p>
-      Your <strong>activation key</strong> is valid for <span class="highlight">one device only</span>.
-      If it is used on more than one device, the key will be <span class="highlight">automatically deactivated</span>.
+      আপনার <strong>activation key</strong> শুধুমাত্র <span class="highlight">একটি ডিভাইসের</span> জন্য বৈধ।
+      যদি একাধিক ডিভাইসে ব্যবহার করা হয়, তাহলে key <span class="highlight">স্বয়ংক্রিয়ভাবে ডিঅ্যাক্টিভেট</span> হবে।
     </p>
     <ul>
-      <li>Your subscription will be <strong>canceled</strong></li>
-      <li>Your payment will be <strong>forfeited</strong> (no refund)</li>
+      <li>সাবস্ক্রিপশন <strong>ক্যানসেল</strong> হয়ে যাবে</li>
+      <li>পেমেন্ট <strong>ফেরত দেওয়া হবে না</strong></li>
     </ul>
   </div>
 
   <div class="example">
     <h2>✅ Example Scenario</h2>
     <p>
-      You activate your key on your phone.<br/>
-      If you try to use the same key on another device (e.g. tablet or second phone), the system will detect it and 
-      <span class="highlight">disable your key</span>. Your payment will also be considered <strong>void</strong>.
+      আপনি যদি আপনার ফোনে key অ্যাক্টিভ করেন, এবং পরে অন্য ডিভাইসে (যেমন ট্যাবলেট বা দ্বিতীয় ফোন) একই key ব্যবহার করতে চান,
+      তাহলে সিস্টেম সেটি শনাক্ত করে <span class="highlight">key নিষ্ক্রিয়</span> করে দেবে এবং পেমেন্ট বাতিল হয়ে যাবে।
     </p>
   </div>
 
   <div class="reminder">
     <h2>🌐 Friendly Reminder</h2>
     <p>
-      This policy helps prevent misuse and ensures better service for all users.<br/>
-      If you need access on multiple devices, please <strong>contact support</strong> for a custom plan.
+      এই পলিসি সঠিক ব্যবহার নিশ্চিত করে এবং সবার জন্য ভালো সার্ভিস বজায় রাখে।<br/>
+      একাধিক ডিভাইসে ব্যবহার করতে চাইলে <strong>সাপোর্টে যোগাযোগ</strong> করুন।
     </p>
   </div>
 
-  <div class="payment-box">
-    <h2>💳 Payment</h2>
-    <button class="pay-btn" onclick="document.getElementById('payment-info').classList.toggle('hidden')">
-      💰 Show Payment Address
-    </button>
-    <div id="payment-info" class="hidden">
-      <p><strong>Payment Method:</strong> BEP20</p>
-      <p><strong>Address:</strong> 
-        <span id="wallet-address">0x191d366e8bb26219179897e71f620ad403819208</span>
-      </p>
-      <button class="copy-btn" onclick="copyAddress()">📋 Copy Address</button>
-    </div>
+  <div class="payment">
+    <h2>💳 Payment Information</h2>
+    <p><strong>Network:</strong> BEP20</p>
+    <p><strong>Address:</strong> <span id="wallet">0x191d366e8bb26219179897e71f620ad403819208</span></p>
+    <button class="copy-btn" onclick="copyAddress()">📋 Copy Address</button>
   </div>
 
   <div class="telegram-link">
@@ -156,9 +166,9 @@
 
   <script>
     function copyAddress() {
-      const address = document.getElementById("wallet-address").innerText;
+      const address = document.getElementById("wallet").innerText;
       navigator.clipboard.writeText(address).then(() => {
-        alert("✅ Wallet address copied!");
+        alert("Wallet address copied!");
       });
     }
   </script>
