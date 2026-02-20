@@ -1,106 +1,316 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ডাটা ক্রয় সিস্টেম</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;700&display=swap" rel="stylesheet">
+    <title>RestEasy Pharma | Premium UK Dispatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Noto Sans Bengali', sans-serif;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: #fff;
-            margin: 0;
-            padding: 0;
+        :root {
+            --primary: #0ea5e9;
+            --whatsapp: #25D366;
+            --telegram: #0088cc;
+            --bg-dark: #020617;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent: #22c55e;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
         }
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Inter', sans-serif;
         }
-        h1 {
+
+        body{
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(14, 165, 233, 0.15) 0, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(14, 165, 233, 0.1) 0, transparent 50%);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        header{
+            padding: 60px 20px 30px;
             text-align: center;
-            font-size: 28px;
-            margin-bottom: 20px;
-            color: #00e6e6;
         }
-        .price {
-            font-size: 20px;
-            background: rgba(0, 230, 230, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
+
+        header h1{
+            font-family: 'Outfit', sans-serif;
+            font-size: 42px;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
         }
-        .steps {
-            margin: 20px 0;
+
+        header p{
+            color: var(--text-muted);
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
-        .step {
-            background: rgba(255, 255, 255, 0.07);
-            padding: 15px;
+
+        .container{
+            width: 90%;
+            max-width: 1000px;
+            margin: 0 auto 60px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card{
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .card h2{
             margin-bottom: 15px;
+            font-size: 18px;
+            color: var(--primary);
+            font-family: 'Outfit', sans-serif;
+            text-transform: uppercase;
+        }
+
+        ul li{
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+            list-style: none;
+        }
+
+        .highlight{ color: var(--primary); font-weight: 600; }
+
+        /* Inventory List - Clickable */
+        .inventory-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .inventory-list li {
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
             border-radius: 10px;
-        }
-        .highlight {
-            color: #00ffcc;
-            font-weight: bold;
-        }
-        .copy-btn {
-            background: #00e6e6;
-            color: #000;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
+            border: 1px solid transparent;
+            font-size: 13px;
             cursor: pointer;
             transition: 0.3s;
+            display: block;
+            text-align: center;
+            font-weight: 500;
         }
-        .copy-btn:hover {
-            background: #00b3b3;
+
+        .inventory-list li:hover {
+            background: rgba(14, 165, 233, 0.1);
+            border-color: var(--primary);
+            transform: scale(1.03);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        .note {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #ccc;
+
+        /* Modal / Popup */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
         }
+
+        .modal-content {
+            background: #1e293b;
+            margin: 15% auto;
+            padding: 35px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid rgba(14, 165, 233, 0.5);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 700;
+            color: white;
+            transition: 0.3s;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-wa { background: var(--whatsapp); }
+        .btn-tg { background: var(--telegram); }
+
+        .btn:hover { 
+            opacity: 0.9; 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            color: var(--text-muted);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .footer{ text-align: center; padding: 40px; color: var(--text-muted); font-size: 12px; }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📊 ডাটা ক্রয় সিস্টেম</h1>
-        <div class="price">
-            প্রতি ডাটা মূল্য: <span class="highlight">১.২ টাকা</span>  
-            <br> 
-            (ন্যূনতম অর্ডার প্রযোজ্য)
+
+<header>
+    <h1>RestEasy Pharma</h1>
+    <p>Premium • Discreet • Guaranteed</p>
+</header>
+
+<div class="container">
+    
+    <div class="grid">
+        <div class="card">
+            <h2>Logistics</h2>
+            <ul>
+                <li>Processing: <span class="highlight">11:00 AM – 12:00 PM</span></li>
+                <li>Mon - Fri: <span class="highlight">Active Dispatch</span></li>
+                <li>Sat - Sun: <span class="highlight">Closed</span></li>
+            </ul>
         </div>
 
-        <div class="steps">
-            <div class="step">1️⃣ ডাটা নিতে হলে প্রথমে মেসেজ দিয়ে <span class="highlight">হাফ পেমেন্ট</span> কনফার্ম করতে হবে।</div>
-            <div class="step">2️⃣ <span class="highlight">৩ কর্মদিবসের</span> মধ্যে ডাটা ডেলিভারি দেওয়া হবে।</div>
-            <div class="step">3️⃣ ডাটায় কোনো সমস্যা থাকলে তা যাচাই করে <span class="highlight">রিফান্ড</span> করা হবে।</div>
-        </div>
-
-        <h2>💳 পেমেন্ট তথ্য</h2>
-        <p>পেমেন্ট নেটওয়ার্ক: <span class="highlight">BEP20</span></p>
-        <p>ওয়ালেট অ্যাড্রেস: <span id="wallet">0x191d366e8bb26219179897e71f620ad403819208</span></p>
-        <button class="copy-btn" onclick="copyWallet()">📋 অ্যাড্রেস কপি করুন</button>
-
-        <div class="note">
-            ✅ আমরা কেবলমাত্র সঠিক ও যাচাইযোগ্য ডাটা প্রদান করি।<br>
-            ✅ আপনার তথ্য গোপনীয় রাখা হবে।
+        <div class="card">
+            <h2>Shipping</h2>
+            <div style="display: flex; gap: 10px;">
+                <div style="flex:1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; text-align: center;">
+                    <p style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Next-Day</p>
+                    <span class="highlight" style="font-size: 20px;">£10</span>
+                </div>
+                <div style="flex:1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; text-align: center;">
+                    <p style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Priority</p>
+                    <span class="highlight" style="font-size: 20px;">£15</span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script>
-        function copyWallet() {
-            const wallet = document.getElementById("wallet").textContent;
-            navigator.clipboard.writeText(wallet).then(() => {
-                alert("ওয়ালেট অ্যাড্রেস কপি হয়েছে!");
-            });
+    <div class="card" style="margin-bottom: 25px;">
+        <h2 style="text-align: center; margin-bottom: 20px;">Available Inventory</h2>
+        <p style="text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 25px;">Select an item below to initiate your order</p>
+        <ul class="inventory-list" id="medicineList">
+            <li>Ritalin</li>
+            <li>Easium Diaz (min 40)</li>
+            <li>Sedil 5mg (min 20)</li>
+            <li>Nitraz 5mg</li>
+            <li>Alprax 1mg / 2mg</li>
+            <li>Bromazepam</li>
+            <li>Midazolam</li>
+            <li>Pase2 (min 15)</li>
+            <li>Rivotril</li>
+            <li>Benzit</li>
+            <li>Clobazam</li>
+            <li>Miramind</li>
+            <li>Pregabalin (min 15)</li>
+            <li>Zopi 10mg (min 14)</li>
+            <li>Modafinil</li>
+            <li>Co-codamol</li>
+            <li>Rlam 1mg (min 15)</li>
+            <li>Etizolam</li>
+            <li>Valium Dows</li>
+            <li>Temaz (min 14)</li>
+            <li>Ativn Loraz (min 30)</li>
+            <li>Tapenta 200mg</li>
+            <li>Royal 225mg</li>
+            <li>Tramadol</li>
+            <li>Aspadol 200mg</li>
+        </ul>
+    </div>
+
+</div>
+
+<div id="orderModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h2 id="selectedMed" style="color: var(--primary); font-size: 24px; margin-bottom: 10px;"></h2>
+        <p style="color: #cbd5e1; font-size: 14px;">Please contact our secure dispatch team to complete your order.</p>
+        
+        <div class="btn-group">
+            <a href="https://wa.me/447453383721" target="_blank" class="btn btn-wa">Order on WhatsApp</a>
+            <a href="https://t.me/+447453383721" target="_blank" class="btn btn-tg">Order on Telegram</a>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    &copy; 2026 RestEasy Pharma UK | Secure & Discreet Medical Logistics
+</div>
+
+<script>
+    const modal = document.getElementById("orderModal");
+    const selectedMedText = document.getElementById("selectedMed");
+    const listItems = document.querySelectorAll("#medicineList li");
+
+    // Click on item to open modal
+    listItems.forEach(item => {
+        item.onclick = function() {
+            selectedMedText.innerText = this.innerText;
+            modal.style.display = "block";
         }
-    </script>
+    });
+
+    // Close function
+    function closeModal() {
+        modal.style.display = "none";
+    }
+
+    // Close if clicked outside
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+
 </body>
 </html>
