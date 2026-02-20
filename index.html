@@ -97,7 +97,7 @@
 
         .highlight{ color: var(--primary); font-weight: 600; }
 
-        /* Inventory List - Clickable */
+        /* Inventory List */
         .inventory-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -121,7 +121,29 @@
             background: rgba(14, 165, 233, 0.1);
             border-color: var(--primary);
             transform: scale(1.03);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Payment Methods Grid */
+        .payment-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .payment-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .payment-item span {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
         }
 
         /* Modal / Popup */
@@ -146,8 +168,6 @@
             max-width: 400px;
             text-align: center;
             border: 1px solid rgba(14, 165, 233, 0.5);
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
-            position: relative;
             animation: fadeIn 0.3s ease;
         }
 
@@ -173,28 +193,31 @@
             font-weight: 700;
             color: white;
             transition: 0.3s;
-            font-size: 15px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .btn-wa { background: var(--whatsapp); }
         .btn-tg { background: var(--telegram); }
 
-        .btn:hover { 
-            opacity: 0.9; 
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        .notice-box {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 13px;
+            border-left: 4px solid #ef4444;
+            margin-top: 20px;
         }
 
         .close-modal {
-            position: absolute;
-            right: 20px;
-            top: 15px;
+            float: right;
             color: var(--text-muted);
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
+            margin-top: -20px;
         }
 
         .footer{ text-align: center; padding: 40px; color: var(--text-muted); font-size: 12px; }
@@ -224,11 +247,11 @@
             <h2>Shipping</h2>
             <div style="display: flex; gap: 10px;">
                 <div style="flex:1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; text-align: center;">
-                    <p style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Next-Day</p>
+                    <p style="font-size: 10px; color: var(--text-muted);">Next-Day</p>
                     <span class="highlight" style="font-size: 20px;">£10</span>
                 </div>
                 <div style="flex:1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; text-align: center;">
-                    <p style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Priority</p>
+                    <p style="font-size: 10px; color: var(--text-muted);">Priority</p>
                     <span class="highlight" style="font-size: 20px;">£15</span>
                 </div>
             </div>
@@ -237,7 +260,6 @@
 
     <div class="card" style="margin-bottom: 25px;">
         <h2 style="text-align: center; margin-bottom: 20px;">Available Inventory</h2>
-        <p style="text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 25px;">Select an item below to initiate your order</p>
         <ul class="inventory-list" id="medicineList">
             <li>Ritalin</li>
             <li>Easium Diaz (min 40)</li>
@@ -267,17 +289,33 @@
         </ul>
     </div>
 
+    <div class="card">
+        <h2>Payment Methods</h2>
+        <div class="payment-grid">
+            <div class="payment-item">
+                <span>Bank Transfer</span>
+            </div>
+            <div class="payment-item">
+                <span>Cryptocurrency</span>
+            </div>
+        </div>
+        
+        <div class="notice-box">
+            <strong>Note:</strong> Proof of payment is required before order confirmation. Orders are processed strictly within the stated schedule.
+        </div>
+    </div>
+
 </div>
 
 <div id="orderModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeModal()">&times;</span>
         <h2 id="selectedMed" style="color: var(--primary); font-size: 24px; margin-bottom: 10px;"></h2>
-        <p style="color: #cbd5e1; font-size: 14px;">Please contact our secure dispatch team to complete your order.</p>
+        <p style="color: #cbd5e1; font-size: 14px;">Contact our secure dispatch team to complete your order.</p>
         
         <div class="btn-group">
-            <a href="https://wa.me/447453383721" target="_blank" class="btn btn-wa">Order on WhatsApp</a>
-            <a href="https://t.me/+447453383721" target="_blank" class="btn btn-tg">Order on Telegram</a>
+            <a href="https://wa.me/447453383721" target="_blank" class="btn btn-wa">WhatsApp</a>
+            <a href="https://t.me/+447453383721" target="_blank" class="btn btn-tg">Telegram</a>
         </div>
     </div>
 </div>
@@ -291,7 +329,6 @@
     const selectedMedText = document.getElementById("selectedMed");
     const listItems = document.querySelectorAll("#medicineList li");
 
-    // Click on item to open modal
     listItems.forEach(item => {
         item.onclick = function() {
             selectedMedText.innerText = this.innerText;
@@ -299,17 +336,8 @@
         }
     });
 
-    // Close function
-    function closeModal() {
-        modal.style.display = "none";
-    }
-
-    // Close if clicked outside
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            closeModal();
-        }
-    }
+    function closeModal() { modal.style.display = "none"; }
+    window.onclick = function(event) { if (event.target == modal) closeModal(); }
 </script>
 
 </body>
