@@ -16,6 +16,7 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border-color: rgba(255, 255, 255, 0.1);
+            --note-bg: rgba(239, 68, 68, 0.1);
         }
 
         *{
@@ -36,7 +37,7 @@
         }
 
         header{
-            padding: 60px 20px 30px;
+            padding: 50px 20px 20px;
             text-align: center;
         }
 
@@ -47,7 +48,6 @@
             background: linear-gradient(to right, #fff, #38bdf8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
         }
 
         header p{
@@ -55,6 +55,7 @@
             font-size: 14px;
             letter-spacing: 2px;
             text-transform: uppercase;
+            margin-top: 5px;
         }
 
         .container{
@@ -63,21 +64,73 @@
             margin: 0 auto 60px;
         }
 
+        /* Live Stock Alert Banner */
+        .stock-banner {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--primary);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stock-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .dot { 
+            height: 12px; width: 12px; 
+            background-color: var(--accent); 
+            border-radius: 50%; 
+            display: inline-block;
+            box-shadow: 0 0 10px var(--accent);
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        .stock-contacts {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .stock-btn {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .stock-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
-            margin-bottom: 25px;
+            margin-top: 25px;
         }
 
         .card{
             background: var(--card-bg);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             padding: 25px;
             border-radius: 20px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
         .card h2{
@@ -88,140 +141,200 @@
             text-transform: uppercase;
         }
 
-        ul li{
+        /* Payment Methods Styling */
+        .payment-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .pay-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .payment-note {
+            margin-top: 20px;
+            background: var(--note-bg);
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #fca5a5;
+        }
+
+        .bank-payment-label {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 16px;
+        }
+
+        .info-list li {
             padding: 10px 0;
             border-bottom: 1px solid var(--border-color);
             font-size: 14px;
+            display: flex;
+            justify-content: space-between;
             list-style: none;
         }
 
         .highlight{ color: var(--primary); font-weight: 600; }
+        .price-tag { color: var(--accent); font-weight: 700; font-size: 15px; }
 
-        /* Inventory List */
         .inventory-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
         }
 
         .inventory-list li {
             background: rgba(255,255,255,0.05);
-            padding: 12px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 12px;
             border: 1px solid transparent;
-            font-size: 13px;
+            font-size: 14px;
             cursor: pointer;
             transition: 0.3s;
-            display: block;
-            text-align: center;
-            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .inventory-list li:hover {
             background: rgba(14, 165, 233, 0.1);
             border-color: var(--primary);
-            transform: scale(1.03);
+            transform: translateY(-3px);
         }
 
-        /* Payment Methods Grid */
-        .payment-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .payment-item {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            border-radius: 12px;
+        /* Contact Section */
+        .contact-card {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(30, 41, 59, 0.7) 100%);
+            border: 1px dashed var(--primary);
+            padding: 25px;
+            border-radius: 20px;
+            margin-top: 25px;
             text-align: center;
-            border: 1px solid var(--border-color);
         }
 
-        .payment-item span {
-            display: block;
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .contact-link {
+            text-decoration: none;
+            font-weight: 700;
             font-size: 14px;
-            font-weight: 600;
-            color: #fff;
+            transition: 0.3s;
         }
 
-        /* Modal / Popup */
+        .cl-wa { color: var(--whatsapp); }
+        .cl-tg { color: var(--telegram); }
+        .contact-link:hover { opacity: 0.7; transform: scale(1.05); }
+
+        /* Modal & Cart */
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.8);
-            backdrop-filter: blur(8px);
+            z-index: 2000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
         }
 
         .modal-content {
-            background: #1e293b;
-            margin: 15% auto;
-            padding: 35px;
+            background: #0f172a;
+            margin: 8% auto;
+            padding: 30px;
             border-radius: 24px;
             width: 90%;
-            max-width: 400px;
-            text-align: center;
-            border: 1px solid rgba(14, 165, 233, 0.5);
-            animation: fadeIn 0.3s ease;
+            max-width: 450px;
+            border: 1px solid var(--primary);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .btn-group {
+        .cart-item {
             display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 25px;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .btn {
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.05);
+            padding: 5px 12px;
+            border-radius: 10px;
+        }
+
+        .qty-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 16px;
-            border-radius: 14px;
-            text-decoration: none;
-            font-weight: 700;
-            color: white;
-            transition: 0.3s;
-            text-transform: uppercase;
         }
 
+        .qty-btn:hover { opacity: 0.8; }
+
+        .cart-footer {
+            margin-top: 20px;
+            border-top: 2px solid var(--primary);
+            padding-top: 15px;
+        }
+
+        .floating-cart {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            width: 65px; height: 65px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4);
+            cursor: pointer;
+            z-index: 1500;
+            transition: 0.3s;
+        }
+
+        .badge {
+            position: absolute; top: 0; right: 0;
+            background: #ef4444; color: white;
+            font-size: 12px; padding: 4px 8px; border-radius: 50%;
+        }
+
+        .btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+        .btn {
+            display: flex; align-items: center; justify-content: center;
+            padding: 14px; border-radius: 12px; text-decoration: none;
+            font-weight: 700; color: white; transition: 0.3s; text-transform: uppercase;
+        }
         .btn-wa { background: var(--whatsapp); }
         .btn-tg { background: var(--telegram); }
 
-        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
-
-        .notice-box {
-            background: rgba(239, 68, 68, 0.1);
-            color: #fca5a5;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 13px;
-            border-left: 4px solid #ef4444;
-            margin-top: 20px;
-        }
-
-        .close-modal {
-            float: right;
-            color: var(--text-muted);
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: -20px;
-        }
-
         .footer{ text-align: center; padding: 40px; color: var(--text-muted); font-size: 12px; }
-
+        .close-modal { float: right; color: var(--text-muted); font-size: 28px; cursor: pointer; margin-top: -15px; }
     </style>
 </head>
 <body>
@@ -232,112 +345,218 @@
 </header>
 
 <div class="container">
-    
-    <div class="grid">
-        <div class="card">
-            <h2>Logistics</h2>
-            <ul>
-                <li>Processing: <span class="highlight">11:00 AM – 12:00 PM</span></li>
-                <li>Mon - Fri: <span class="highlight">Active Dispatch</span></li>
-                <li>Sat - Sun: <span class="highlight">Closed</span></li>
-            </ul>
-        </div>
 
-        <div class="card">
-            <h2>Shipping</h2>
-            <div style="display: flex; gap: 10px;">
-                <div style="flex:1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; text-align: center;">
-                    <p style="font-size: 10px; color: var(--text-muted);">Next-Day</p>
-                    <span class="highlight" style="font-size: 20px;">£10</span>
-                </div>
-                <div style="flex:1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; text-align: center;">
-                    <p style="font-size: 10px; color: var(--text-muted);">Priority</p>
-                    <span class="highlight" style="font-size: 20px;">£15</span>
-                </div>
-            </div>
+    <div class="stock-banner">
+        <div class="stock-status">
+            <span class="dot"></span>
+            <span style="font-weight: 700; font-size: 16px; letter-spacing: 1px; color: #fff;">LIVE STOCK UPDATES</span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted);">Please confirm availability before placing your order. 📩</p>
+        
+        <div class="stock-contacts">
+            <a href="https://wa.me/447453383721?text=Hi, I would like to check the current stock availability." target="_blank" class="stock-btn" style="background: var(--whatsapp);">
+                WhatsApp Stock Check
+            </a>
+            <a href="https://t.me/RestEasyPharmaAdmin" target="_blank" class="stock-btn" style="background: var(--telegram);">
+                Telegram Stock Check
+            </a>
         </div>
     </div>
 
     <div class="card" style="margin-bottom: 25px;">
-        <h2 style="text-align: center; margin-bottom: 20px;">Available Inventory</h2>
+        <h2 style="text-align: center;">Available Inventory</h2>
         <ul class="inventory-list" id="medicineList">
-            <li>Ritalin</li>
-            <li>Easium Diaz (min 40)</li>
-            <li>Sedil 5mg (min 20)</li>
-            <li>Nitraz 5mg</li>
-            <li>Alprax 1mg / 2mg</li>
-            <li>Bromazepam</li>
-            <li>Midazolam</li>
-            <li>Pase2 (min 15)</li>
-            <li>Rivotril</li>
-            <li>Benzit</li>
-            <li>Clobazam</li>
-            <li>Miramind</li>
-            <li>Pregabalin (min 15)</li>
-            <li>Zopi 10mg (min 14)</li>
-            <li>Modafinil</li>
-            <li>Co-codamol</li>
-            <li>Rlam 1mg (min 15)</li>
-            <li>Etizolam</li>
-            <li>Valium Dows</li>
-            <li>Temaz (min 14)</li>
-            <li>Ativn Loraz (min 30)</li>
-            <li>Tapenta 200mg</li>
-            <li>Royal 225mg</li>
-            <li>Tramadol</li>
-            <li>Aspadol 200mg</li>
+            <li onclick="addToCart('Ritalin', 3)"><span>Ritalin</span> <span class="price-tag">£3</span></li>
+            <li onclick="addToCart('Easium Diaz', 0.90)"><span>Easium Diaz (min 40)</span> <span class="price-tag">£0.90</span></li>
+            <li onclick="addToCart('Sedil 5mg', 1)"><span>Sedil 5mg (min 20)</span> <span class="price-tag">£1</span></li>
+            <li onclick="addToCart('Nitraz 5mg', 1)"><span>Nitraz 5mg</span> <span class="price-tag">£1</span></li>
+            <li onclick="addToCart('Alprax 1mg', 1.4)"><span>Alprax 1mg</span> <span class="price-tag">£1.4</span></li>
+            <li onclick="addToCart('Alprax 2mg', 1.8)"><span>Alprax 2mg</span> <span class="price-tag">£1.8</span></li>
+            <li onclick="addToCart('Bromazepam', 1)"><span>Bromazepam</span> <span class="price-tag">£1</span></li>
+            <li onclick="addToCart('Midazolam', 1.4)"><span>Midazolam</span> <span class="price-tag">£1.4</span></li>
+            <li onclick="addToCart('Pase2', 1.4)"><span>Pase2 (min 15)</span> <span class="price-tag">£1.4</span></li>
+            <li onclick="addToCart('Rivotril', 1.6)"><span>Rivotril</span> <span class="price-tag">£1.6</span></li>
+            <li onclick="addToCart('Benzit', 1)"><span>Benzit</span> <span class="price-tag">£1</span></li>
+            <li onclick="addToCart('Clobazam', 1)"><span>Clobazam</span> <span class="price-tag">£1</span></li>
+            <li onclick="addToCart('Miramind', 1)"><span>Miramind</span> <span class="price-tag">£1</span></li>
+            <li onclick="addToCart('Pregabalin', 1)"><span>Pregabalin (min 15)</span> <span class="price-tag">£1</span></li>
+            <li onclick="addToCart('Zopi 10mg', 0.90)"><span>Zopi 10mg (min 14)</span> <span class="price-tag">£0.90</span></li>
+            <li onclick="addToCart('Modafinil', 1)"><span>Modafinil</span> <span class="price-tag">£1</span></li>
+            <li onclick="addToCart('Co-codamol', 1.3)"><span>Co-codamol</span> <span class="price-tag">£1.3</span></li>
+            <li onclick="addToCart('Rlam 1mg', 1.3)"><span>Rlam 1mg (min 15)</span> <span class="price-tag">£1.3</span></li>
+            <li onclick="addToCart('Etizolam', 1.5)"><span>Etizolam</span> <span class="price-tag">£1.5</span></li>
+            <li onclick="addToCart('Valium Dows', 1.5)"><span>Valium Dows</span> <span class="price-tag">£1.5</span></li>
+            <li onclick="addToCart('Temaz', 1.5)"><span>Temaz (min 14)</span> <span class="price-tag">£1.5</span></li>
+            <li onclick="addToCart('Ativn Loraz', 1.5)"><span>Ativn Loraz (min 30)</span> <span class="price-tag">£1.5</span></li>
+            <li onclick="addToCart('Tapenta 200mg', 1.4)"><span>Tapenta 200mg</span> <span class="price-tag">£1.4</span></li>
+            <li onclick="addToCart('Royal 225mg', 0.5)"><span>Royal 225mg</span> <span class="price-tag">£0.5</span></li>
+            <li onclick="addToCart('Tramadol', 1.5)"><span>Tramadol</span> <span class="price-tag">£1.5</span></li>
+            <li onclick="addToCart('Aspadol 200mg', 1.5)"><span>Aspadol 200mg</span> <span class="price-tag">£1.5</span></li>
         </ul>
     </div>
 
-    <div class="card">
+    <div class="card" style="margin-bottom: 25px;">
         <h2>Payment Methods</h2>
         <div class="payment-grid">
-            <div class="payment-item">
-                <span>Bank Transfer</span>
-            </div>
-            <div class="payment-item">
-                <span>Cryptocurrency</span>
-            </div>
+            <div class="pay-box">Bank<br>Transfer</div>
+            <div class="pay-box">Cryptocurrency</div>
         </div>
-        
-        <div class="notice-box">
+        <div class="payment-note">
             <strong>Note:</strong> Proof of payment is required before order confirmation. Orders are processed strictly within the stated schedule.
+        </div>
+        <div class="bank-payment-label">Bank Payment</div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h2>Dispatch Schedule</h2>
+            <ul class="info-list">
+                <li>Processing: <span class="highlight">11:00 AM – 12:00 PM</span></li>
+                <li>Working Days: <span class="highlight">Mon – Fri</span></li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Delivery Fees</h2>
+            <ul class="info-list">
+                <li>Standard Next-day: <span class="price-tag">£10</span></li>
+                <li>Guaranteed (Pre 1PM): <span class="price-tag">£15</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="contact-card">
+        <h2 style="font-size: 20px; color: var(--text-main); font-family: 'Outfit';">CONTACT US</h2>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Have questions? Reach out to our support team.</p>
+        <div class="contact-links">
+            <a href="https://wa.me/447453383721" target="_blank" class="contact-link cl-wa">WHATSAPP</a>
+            <span style="color: var(--border-color);">|</span>
+            <a href="https://t.me/RestEasyPharmaAdmin" target="_blank" class="contact-link cl-tg">TELEGRAM</a>
         </div>
     </div>
 
 </div>
 
-<div id="orderModal" class="modal">
+<div class="floating-cart" onclick="toggleModal()">
+    <span style="font-size: 28px;">🛒</span>
+    <span class="badge" id="cartCount">0</span>
+</div>
+
+<div id="cartModal" class="modal">
     <div class="modal-content">
-        <span class="close-modal" onclick="closeModal()">&times;</span>
-        <h2 id="selectedMed" style="color: var(--primary); font-size: 24px; margin-bottom: 10px;"></h2>
-        <p style="color: #cbd5e1; font-size: 14px;">Contact our secure dispatch team to complete your order.</p>
+        <span class="close-modal" onclick="toggleModal()">&times;</span>
+        <h2 style="color: var(--primary); margin-bottom: 20px;">Shopping Cart</h2>
         
-        <div class="btn-group">
-            <a href="https://wa.me/447453383721" target="_blank" class="btn btn-wa">WhatsApp</a>
-            <a href="https://t.me/+447453383721" target="_blank" class="btn btn-tg">Telegram</a>
+        <div id="cartItemsList" style="max-height: 350px; overflow-y: auto; padding-right: 5px;">
+            <p style="text-align: center; color: var(--text-muted);">Cart is empty</p>
+        </div>
+
+        <div class="cart-footer">
+            <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 18px; margin-bottom: 10px;">
+                <span>Subtotal:</span>
+                <span id="totalPrice" class="price-tag">£0.00</span>
+            </div>
+            
+            <div class="btn-group">
+                <a href="javascript:void(0)" onclick="checkout('WA')" class="btn btn-wa">Order via WhatsApp</a>
+                <a href="javascript:void(0)" onclick="checkout('TG')" class="btn btn-tg">Order via Telegram</a>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="footer">
-    &copy; 2026 RestEasy Pharma UK | Secure & Discreet Medical Logistics
+    &copy; 2026 RestEasy Pharma UK | Secure Medical Logistics
 </div>
 
 <script>
-    const modal = document.getElementById("orderModal");
-    const selectedMedText = document.getElementById("selectedMed");
-    const listItems = document.querySelectorAll("#medicineList li");
+    let cart = [];
+    const modal = document.getElementById('cartModal');
 
-    listItems.forEach(item => {
-        item.onclick = function() {
-            selectedMedText.innerText = this.innerText;
-            modal.style.display = "block";
+    function addToCart(name, price) {
+        const existingItem = cart.find(item => item.name === name);
+        if (existingItem) {
+            existingItem.qty += 1;
+        } else {
+            cart.push({ name, price, qty: 1 });
         }
-    });
+        updateCartUI();
+    }
 
-    function closeModal() { modal.style.display = "none"; }
-    window.onclick = function(event) { if (event.target == modal) closeModal(); }
+    function changeQty(index, delta) {
+        cart[index].qty += delta;
+        if (cart[index].qty <= 0) {
+            cart.splice(index, 1);
+        }
+        updateCartUI();
+    }
+
+    function updateCartUI() {
+        const cartCount = document.getElementById('cartCount');
+        const cartItemsList = document.getElementById('cartItemsList');
+        const totalPriceElement = document.getElementById('totalPrice');
+        
+        let totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+        cartCount.innerText = totalItems;
+        
+        if (cart.length === 0) {
+            cartItemsList.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px;">Your cart is empty</p>';
+            totalPriceElement.innerText = '£0.00';
+            return;
+        }
+
+        let html = '';
+        let total = 0;
+        
+        cart.forEach((item, index) => {
+            const itemTotal = item.price * item.qty;
+            total += itemTotal;
+            html += `
+                <div class="cart-item">
+                    <div>
+                        <div style="font-weight: 600; font-size: 14px;">${item.name}</div>
+                        <div style="font-size: 12px; color: var(--accent);">£${item.price.toFixed(2)} / unit</div>
+                    </div>
+                    <div class="qty-controls">
+                        <button class="qty-btn" onclick="changeQty(${index}, -1)">-</button>
+                        <span style="font-weight: 700; min-width: 20px; text-align: center;">${item.qty}</span>
+                        <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        cartItemsList.innerHTML = html;
+        totalPriceElement.innerText = `£${total.toFixed(2)}`;
+    }
+
+    function toggleModal() {
+        modal.style.display = (modal.style.display === "block") ? "none" : "block";
+    }
+
+    function checkout(platform) {
+        if (cart.length === 0) {
+            alert("Cart is empty!");
+            return;
+        }
+
+        let message = "Hello RestEasy Pharma, I want to order:%0A%0A";
+        cart.forEach((item) => {
+            message += `• ${item.name} (x${item.qty}) - £${(item.price * item.qty).toFixed(2)}%0A`;
+        });
+        message += `%0A*Total Order: ${document.getElementById('totalPrice').innerText}*`;
+
+        const phone = "447453383721";
+        const url = platform === 'WA' 
+            ? `https://wa.me/${phone}?text=${message}` 
+            : `https://t.me/RestEasyPharmaAdmin?text=${message}`;
+        
+        window.open(url, '_blank');
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) toggleModal();
+    }
 </script>
 
 </body>
