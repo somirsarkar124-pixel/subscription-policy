@@ -17,19 +17,20 @@
             display: flex; flex-direction: column; align-items: center; margin: 0;
         }
 
-        /* Admin Section */
+        /* Admin Header */
         .admin-header { width: 100%; max-width: 700px; display: flex; justify-content: flex-end; margin-bottom: 10px; }
         .admin-btn {
             background: transparent; color: var(--secondary); border: 1px solid var(--secondary);
-            padding: 6px 15px; border-radius: 20px; cursor: pointer; font-size: 0.75rem;
+            padding: 6px 15px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; transition: 0.3s;
         }
+        .admin-btn:hover { border-color: var(--primary); color: var(--primary); }
 
+        /* Admin Panel Form */
         .admin-panel {
             background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 25px;
             width: 100%; max-width: 700px; display: none; border: 1px solid var(--primary);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-
         .admin-panel input {
             padding: 12px; margin: 5px 0; border-radius: 8px; border: 1px solid #334155;
             background: #0f172a; color: white; width: 100%; box-sizing: border-box;
@@ -40,30 +41,34 @@
         #searchBar {
             width: 100%; padding: 15px 20px; font-size: 16px; border-radius: 12px;
             border: 2px solid var(--primary); background: var(--card); color: white; outline: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
-        /* List Styling */
+        /* List Items */
         .med-list { width: 100%; max-width: 700px; }
-        .category-group { margin-bottom: 30px; }
+        .category-group { margin-bottom: 30px; width: 100%; }
         .category-title {
             color: var(--primary); font-size: 0.85rem; margin-bottom: 12px;
             text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 1px solid rgba(56,189,248,0.2);
             padding-bottom: 5px;
         }
-
         .med-item {
             background: var(--card); margin-bottom: 8px; padding: 12px 18px;
-            border-radius: 10px; display: grid; grid-template-columns: 2.5fr 1fr 1fr;
+            border-radius: 10px; display: grid; grid-template-columns: 2.5fr 1.2fr 1fr;
             align-items: center; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s; cursor: pointer;
         }
-
-        .med-item:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .med-item:hover { border-color: var(--primary); transform: translateY(-2px); background: #243147; }
         .med-name { font-weight: 600; display: block; color: #fff; }
         .generic-name { font-size: 0.8rem; color: var(--secondary); font-style: italic; }
         .min-order { font-size: 0.85rem; color: var(--accent); text-align: center; }
         .price { color: var(--primary); font-weight: 700; text-align: right; font-size: 1.1rem; }
 
-        .loader { color: var(--primary); margin-top: 50px; font-weight: bold; }
+        .loader { color: var(--primary); margin-top: 50px; font-weight: bold; letter-spacing: 1px; }
+
+        @media (max-width: 600px) {
+            .med-item { grid-template-columns: 1.8fr 1fr 1fr; padding: 10px 15px; }
+            .med-name { font-size: 0.95rem; }
+        }
     </style>
 </head>
 <body>
@@ -73,26 +78,26 @@
     </div>
 
     <div id="adminPanel" class="admin-panel">
-        <h3 style="margin-top:0; color:var(--primary)">Add New Medicine</h3>
+        <h3 style="margin-top:0; color:var(--primary)">Cloud Entry Form</h3>
         <input type="text" id="newName" placeholder="Brand Name">
         <input type="text" id="newGen" placeholder="Generic Name">
-        <input type="text" id="newPrice" placeholder="Price (e.g. 1.50)">
-        <input type="text" id="newMin" placeholder="Min Qty (e.g. 10)">
-        <input type="text" id="newCat" placeholder="Category (e.g. Anxiety)">
+        <input type="text" id="newPrice" placeholder="Price (e.g. 1.20)">
+        <input type="text" id="newMin" placeholder="Minimum Quantity">
+        <input type="text" id="newCat" placeholder="Category (e.g. General)">
         <button onclick="sendToCloud()" style="width:100%; padding:12px; background:var(--primary); border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:10px">Save to Google Sheet</button>
     </div>
 
     <div class="search-container">
-        <input type="text" id="searchBar" placeholder="Search brands or generic..." onkeyup="filterMeds()">
+        <input type="text" id="searchBar" placeholder="Search Brand or Generic..." onkeyup="filterMeds()">
     </div>
 
-    <div id="loading" class="loader">SYNCING DATA...</div>
+    <div id="loading" class="loader">FETCHING FROM CLOUD...</div>
     <div class="med-list" id="listContainer"></div>
 
     <script>
-        // আপনার লিঙ্কগুলো এখানে বসানো হয়েছে
+        // আপনার লিঙ্কগুলো এখানে আপডেট করা হয়েছে
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzt6y23vRLcYlAYA0U8IBtoZPHuNrp3CrwJVGdQF-bd4Cd2qZf0gEnjYs_smPuKQM4P/exec'; 
-        const CSV_URL = 'এখানে_আপনার_গুগল_শিটের_CSV_লিঙ্কটি_দিন';
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQixk_fY4qSEvivXg26oQEVZmxpUadKqyGB2EcJDcwweu3CsyE-Ued2NhSZtDAWR9Ndsl045NjUiwpe/pub?output=csv';
 
         let isAdminLoggedIn = false;
 
@@ -100,27 +105,42 @@
             try {
                 const res = await fetch(CSV_URL);
                 const text = await res.text();
-                const rows = text.split('\n').slice(1);
+                
+                // CSV Parsing
+                const rows = text.split(/\r?\n/).slice(1);
                 const meds = rows.map(r => {
-                    const c = r.split(',');
-                    return { name: c[0], gen: c[1], price: c[2], min: c[3], cat: c[4]?.trim() || "General" };
-                }).filter(m => m.name);
-                render(meds);
+                    const c = r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    if(c.length < 3) return null;
+                    return { 
+                        name: c[0]?.replace(/"/g, ''), 
+                        gen: c[1]?.replace(/"/g, ''), 
+                        price: parseFloat(c[2]?.replace(/"/g, '') || 0), 
+                        min: parseInt(c[3]?.replace(/"/g, '') || 0), 
+                        cat: c[4]?.replace(/"/g, '').trim() || "General" 
+                    };
+                }).filter(m => m && m.name);
+
+                renderMeds(meds);
                 document.getElementById('loading').style.display = 'none';
-            } catch (e) { document.getElementById('loading').innerText = "ERROR: CSV LINK MISSING"; }
+            } catch (e) {
+                document.getElementById('loading').innerText = "DATABASE OFFLINE";
+                console.error(e);
+            }
         }
 
-        function render(meds) {
+        function renderMeds(meds) {
             const container = document.getElementById('listContainer');
             container.innerHTML = "";
             const categories = [...new Set(meds.map(m => m.cat))];
+
             categories.forEach(cat => {
                 let html = `<div class="category-group"><h3 class="category-title">${cat}</h3>`;
                 meds.filter(m => m.cat === cat).forEach(m => {
-                    html += `<div class="med-item" onclick="calc('${m.name}', ${m.price}, ${m.min})">
+                    html += `
+                    <div class="med-item" onclick="calculate('${m.name}', ${m.price}, ${m.min})">
                         <div><span class="med-name">${m.name}</span><span class="generic-name">${m.gen}</span></div>
                         <div class="min-order">Min: ${m.min}</div>
-                        <div class="price">£${parseFloat(m.price).toFixed(2)}</div>
+                        <div class="price">£${m.price.toFixed(2)}</div>
                     </div>`;
                 });
                 container.innerHTML += html + `</div>`;
@@ -129,11 +149,11 @@
 
         function handleAdmin() {
             if (!isAdminLoggedIn) {
-                if (prompt("Admin Password:") === "68") {
+                if (prompt("Admin Pass:") === "68") {
                     isAdminLoggedIn = true;
                     document.getElementById('adminPanel').style.display = "block";
                     document.getElementById('adminToggle').innerText = "Logout";
-                } else alert("Wrong!");
+                }
             } else {
                 isAdminLoggedIn = false;
                 document.getElementById('adminPanel').style.display = "none";
@@ -149,15 +169,23 @@
                 min: document.getElementById('newMin').value,
                 cat: document.getElementById('newCat').value
             };
-            if(!data.name || !data.price) return alert("Fill Name & Price!");
+
+            if(!data.name || !data.price) return alert("Fill Name and Price!");
+
+            alert("Syncing with Google Sheet... Please wait 10 seconds.");
             
-            alert("Saving to Google Sheet... Please wait about 10 seconds.");
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-            alert("Data Saved! Refreshing...");
-            location.reload();
+            try {
+                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+                alert("Saved Successfully! Reloading...");
+                location.reload();
+            } catch(e) {
+                alert("Error saving data!");
+            }
         }
 
-        function calc(n, p, m) { alert(`${n}\nPrice: £${p}\nMin: ${m}\nTotal: £${(p*m).toFixed(2)}`); }
+        function calculate(n, p, m) {
+            alert(`MEDICINE: ${n}\n------------------\nPRICE: £${p.toFixed(2)}\nQUANTITY: ${m}\n------------------\nTOTAL: £${(p*m).toFixed(2)}`);
+        }
 
         function filterMeds() {
             let q = document.getElementById('searchBar').value.toLowerCase();
