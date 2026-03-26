@@ -2,236 +2,259 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medicine Manager | Cloud Sync</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Medicine Hub Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f172a; --card: #1e293b; --primary: #38bdf8;
-            --secondary: #94a3b8; --accent: #fbbf24; --text: #f8fafc;
+            --bg: #030712; --card: #111827; --primary: #0ea5e9;
+            --secondary: #94a3b8; --accent: #f59e0b; --text: #f8fafc;
+            --danger: #ef4444;
         }
 
+        /* স্মুথ স্ক্রলিং এবং পারফরম্যান্স বুস্ট */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             background-color: var(--bg); color: var(--text);
-            font-family: 'Inter', sans-serif; padding: 20px;
+            font-family: 'Plus Jakarta Sans', sans-serif; padding: 15px;
             display: flex; flex-direction: column; align-items: center; margin: 0;
+            overflow-x: hidden; scroll-behavior: smooth;
+            background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #030712 100%);
         }
 
-        /* Admin Controls */
-        .admin-header { width: 100%; max-width: 700px; display: flex; justify-content: flex-end; margin-bottom: 15px; }
-        .admin-btn {
-            background: transparent; color: var(--secondary); border: 1px solid var(--secondary);
-            padding: 8px 18px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; transition: 0.3s;
+        .header-controls { 
+            width: 100%; max-width: 600px; 
+            display: flex; justify-content: space-between; 
+            margin-bottom: 20px; gap: 8px;
         }
-        .admin-btn:hover { border-color: var(--primary); color: var(--primary); }
 
-        /* Admin Panel Form */
-        .admin-panel {
-            background: var(--card); padding: 25px; border-radius: 15px; margin-bottom: 30px;
-            width: 100%; max-width: 700px; display: none; border: 1px solid var(--primary);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6); box-sizing: border-box;
+        .btn-action {
+            background: rgba(255,255,255,0.05); color: var(--secondary); border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 15px; border-radius: 14px; cursor: pointer; font-size: 0.8rem; 
+            font-weight: 600; transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform; /* পারফরম্যান্স অপ্টিমাইজেশন */
         }
-        .admin-panel input, .admin-panel select {
-            padding: 14px; margin: 8px 0; border-radius: 10px; border: 1px solid #334155;
-            background: #0f172a; color: white; width: 100%; box-sizing: border-box; font-size: 1rem;
-        }
-        .admin-panel label { font-size: 0.85rem; color: var(--secondary); margin-top: 10px; display: block; }
+        .btn-action:active { transform: scale(0.95); }
+        .btn-deselect { display: none; color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
 
-        /* Search Bar */
-        .search-container { width: 100%; max-width: 700px; margin-bottom: 35px; position: sticky; top: 15px; z-index: 100; }
+        /* সার্চ বার ফিক্সড পজিশন অপ্টিমাইজড */
+        .search-container { width: 100%; max-width: 600px; margin-bottom: 25px; position: sticky; top: 10px; z-index: 100; }
         #searchBar {
-            width: 100%; padding: 18px 25px; font-size: 16px; border-radius: 15px;
-            border: 2px solid var(--primary); background: var(--card); color: white; outline: none;
-            box-shadow: 0 6px 25px rgba(0,0,0,0.5); box-sizing: border-box;
+            width: 100%; padding: 16px 22px; font-size: 16px; border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1); background: rgba(17, 24, 39, 0.9); 
+            color: white; outline: none; backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* List Styling */
-        .med-list { width: 100%; max-width: 700px; }
-        .category-group { margin-bottom: 40px; width: 100%; }
+        /* মেডিসিন কার্ড - GPU Accelerated */
+        .med-list { width: 100%; max-width: 600px; contain: content; }
+        .category-group { margin-bottom: 30px; }
         .category-title {
-            color: var(--primary); font-size: 0.9rem; margin-bottom: 15px;
-            text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid rgba(56,189,248,0.2);
-            padding-bottom: 8px; font-weight: 600;
+            color: var(--primary); font-size: 0.75rem; margin-left: 5px; margin-bottom: 12px;
+            text-transform: uppercase; letter-spacing: 2px; font-weight: 800; opacity: 0.7;
         }
+
         .med-item {
-            background: var(--card); margin-bottom: 10px; padding: 15px 20px;
-            border-radius: 12px; display: grid; grid-template-columns: 2.5fr 1.2fr 1fr;
-            align-items: center; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s ease; cursor: pointer;
+            background: var(--card); margin-bottom: 10px; padding: 16px 18px;
+            border-radius: 18px; display: flex; align-items: center;
+            border: 1px solid rgba(255,255,255,0.03); 
+            transition: transform 0.2s ease, background 0.2s ease;
+            will-change: transform;
         }
-        .med-item:hover { border-color: var(--primary); transform: translateY(-3px); background: #243147; }
-        .med-name { font-weight: 600; display: block; color: #fff; font-size: 1.1rem; }
-        .generic-name { font-size: 0.85rem; color: var(--secondary); font-style: italic; margin-top: 2px; display: block; }
-        .min-order { font-size: 0.9rem; color: var(--accent); text-align: center; font-weight: 500; }
-        .price { color: var(--primary); font-weight: 700; text-align: right; font-size: 1.2rem; }
+        .med-item:active { transform: scale(0.98); background: #1e293b; }
+        
+        .stock-checkbox { display: none; margin-right: 15px; width: 20px; height: 20px; accent-color: var(--primary); }
+        .stock-mode-active .stock-checkbox { display: block; }
+        .stock-mode-active .btn-deselect { display: block; }
 
-        .loader { color: var(--primary); margin-top: 60px; font-weight: bold; letter-spacing: 2px; animation: blink 1.5s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        .med-content { flex: 1; min-width: 0; }
+        .med-name { font-weight: 700; color: #fff; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .generic-name { font-size: 0.8rem; color: var(--secondary); margin-top: 2px; display: block; }
+        .price { color: var(--primary); font-weight: 800; font-size: 1.2rem; margin-left: 10px; }
 
-        @media (max-width: 600px) {
-            .med-item { grid-template-columns: 1.8fr 1fr 1fr; padding: 12px 15px; }
-            .med-name { font-size: 1rem; }
-            .price { font-size: 1.1rem; }
+        /* প্রিমিয়াম মডাল - নো ল্যাগ */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
+        .modal-card {
+            background: #111827; width: 85%; max-width: 380px; padding: 30px;
+            border-radius: 28px; border: 1px solid rgba(255,255,255,0.1); text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            animation: modalShow 0.2s ease-out;
+        }
+        @keyframes modalShow { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
+        
+        .total-box { background: var(--primary); color: #000; padding: 18px; border-radius: 16px; margin-top: 20px; font-weight: 800; font-size: 1.4rem; }
+
+        .loader { color: var(--primary); margin-top: 100px; font-weight: 800; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
-    <div class="admin-header">
-        <button class="admin-btn" id="adminToggle" onclick="handleAdmin()">+ Admin Mode</button>
+    <div class="header-controls">
+        <button class="btn-action" id="stockBtn" onclick="toggleStock()">Stock View</button>
+        <button class="btn-action btn-deselect" id="deselectBtn" onclick="deselectAll()">Clear Selection</button>
+        <button class="btn-action" onclick="showAdmin()">+ Admin</button>
     </div>
 
-    <div id="adminPanel" class="admin-panel">
-        <h3 style="margin-top:0; color:var(--primary); border-bottom: 1px solid #334155; padding-bottom: 10px;">Add New Entry</h3>
-        
-        <input type="text" id="newName" placeholder="Brand Name (e.g. Easium)">
-        <input type="text" id="newGen" placeholder="Generic Name (e.g. Diazepam)">
-        <input type="number" id="newPrice" step="0.01" placeholder="Price per unit (e.g. 1.20)">
-        <input type="number" id="newMin" placeholder="Minimum Quantity (e.g. 10)">
-        
-        <label>Select Category:</label>
-        <select id="newCat">
+    <div id="adminPanel" style="display:none; background:var(--card); width:100%; max-width:600px; padding:20px; border-radius:20px; margin-bottom:20px; border:1px solid var(--primary);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="margin:0">New Entry</h3>
+            <span onclick="closeAdmin()" style="cursor:pointer; font-size:1.5rem;">&times;</span>
+        </div>
+        <input type="text" id="newName" placeholder="Brand Name" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:none; background:#030712; color:white;">
+        <input type="text" id="newGen" placeholder="Generic" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:none; background:#030712; color:white;">
+        <div style="display:flex; gap:10px;">
+            <input type="number" id="newPrice" placeholder="Price" style="flex:1; padding:12px; border-radius:10px; border:none; background:#030712; color:white;">
+            <input type="number" id="newMin" placeholder="Min" style="flex:1; padding:12px; border-radius:10px; border:none; background:#030712; color:white;">
+        </div>
+        <select id="newCat" style="width:100%; padding:12px; margin:10px 0; border-radius:10px; border:none; background:#030712; color:white;">
             <option value="Anxiety & Benzodiazepines">Anxiety & Benzodiazepines</option>
             <option value="Pain Relief">Pain Relief</option>
             <option value="Sleep & Stimulants">Sleep & Stimulants</option>
         </select>
-
-        <button onclick="sendToCloud()" style="width:100%; padding:15px; background:var(--primary); border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:20px; color: #0f172a; font-size: 1rem;">SAVE TO GOOGLE SHEET</button>
+        <button onclick="saveData()" style="width:100%; padding:15px; background:var(--primary); border:none; border-radius:12px; font-weight:800; color:white;">SAVE</button>
     </div>
 
     <div class="search-container">
-        <input type="text" id="searchBar" placeholder="Search brands or generic..." onkeyup="filterMeds()">
+        <input type="text" id="searchBar" placeholder="Search..." oninput="filterMeds()">
     </div>
 
-    <div id="loading" class="loader">SYNCING DATA...</div>
+    <div id="loading" class="loader">LOADING...</div>
     <div class="med-list" id="listContainer"></div>
 
+    <div id="modalOverlay" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <h2 id="modalBrand" style="margin:0 0 10px 0; color:var(--primary);"></h2>
+            <p id="modalGen" style="color:var(--secondary); margin-bottom:20px;"></p>
+            <div style="display:flex; justify-content:space-between; margin:10px 0; font-size:0.9rem;">
+                <span>Price/Unit:</span> <span id="modalPrice" style="font-weight:700;"></span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin:10px 0; font-size:0.9rem;">
+                <span>Min Quantity:</span> <span id="modalMin" style="font-weight:700;"></span>
+            </div>
+            <div class="total-box">TOTAL: <span id="modalTotal"></span></div>
+        </div>
+    </div>
+
     <script>
-        // আপনার লিঙ্কগুলো এখানে ইন্টিগ্রেট করা হয়েছে
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzt6y23vRLcYlAYA0U8IBtoZPHuNrp3CrwJVGdQF-bd4Cd2qZf0gEnjYs_smPuKQM4P/exec'; 
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQixk_fY4qSEvivXg26oQEVZmxpUadKqyGB2EcJDcwweu3CsyE-Ued2NhSZtDAWR9Ndsl045NjUiwpe/pub?output=csv';
 
-        let isAdminLoggedIn = false;
+        let allMeds = [];
+        let isStockSelecting = false;
+        let selectedItems = JSON.parse(localStorage.getItem('my_stock_list')) || [];
 
-        // Fetch Data from Google Sheet CSV
         async function loadData() {
             try {
                 const res = await fetch(CSV_URL);
                 const text = await res.text();
-                
-                // CSV Parsing Logic
                 const rows = text.split(/\r?\n/).slice(1);
-                const meds = rows.map(r => {
+                allMeds = rows.map(r => {
                     const c = r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                     if(c.length < 3) return null;
                     return { 
-                        name: c[0]?.replace(/"/g, ''), 
-                        gen: c[1]?.replace(/"/g, ''), 
+                        name: c[0]?.replace(/"/g, ''), gen: c[1]?.replace(/"/g, ''), 
                         price: parseFloat(c[2]?.replace(/"/g, '') || 0), 
                         min: parseInt(c[3]?.replace(/"/g, '') || 0), 
                         cat: c[4]?.replace(/"/g, '').trim() || "General" 
                     };
                 }).filter(m => m && m.name);
-
-                renderMeds(meds);
+                render();
                 document.getElementById('loading').style.display = 'none';
-            } catch (e) {
-                document.getElementById('loading').innerText = "CONNECTION ERROR";
-                console.error(e);
-            }
+            } catch (e) { document.getElementById('loading').innerText = "NETWORK ERROR"; }
         }
 
-        // Display Data on Screen
-        function renderMeds(meds) {
+        function render() {
             const container = document.getElementById('listContainer');
-            container.innerHTML = "";
-            
-            // Get unique categories and sort them as per your list
             const categories = ["Anxiety & Benzodiazepines", "Pain Relief", "Sleep & Stimulants"];
-            
-            // Add any other categories found in sheet that are not in the main 3
-            const extraCats = [...new Set(meds.map(m => m.cat))].filter(c => !categories.includes(c));
-            const finalCategories = [...categories, ...extraCats];
+            let displayList = isStockSelecting ? allMeds : (selectedItems.length > 0 ? allMeds.filter(m => selectedItems.includes(m.name)) : allMeds);
 
-            finalCategories.forEach(cat => {
-                const catMeds = meds.filter(m => m.cat === cat);
+            let finalHtml = "";
+            categories.forEach(cat => {
+                const catMeds = displayList.filter(m => m.cat === cat);
                 if(catMeds.length === 0) return;
-
-                let html = `<div class="category-group"><h3 class="category-title">${cat}</h3>`;
+                finalHtml += `<div class="category-group"><h3 class="category-title">${cat}</h3>`;
                 catMeds.forEach(m => {
-                    html += `
-                    <div class="med-item" onclick="calculate('${m.name}', ${m.price}, ${m.min})">
-                        <div>
+                    const isChecked = selectedItems.includes(m.name) ? 'checked' : '';
+                    finalHtml += `
+                    <div class="med-item" onclick="showDetails('${m.name}', '${m.gen}', ${m.price}, ${m.min})">
+                        <input type="checkbox" class="stock-checkbox" ${isChecked} onclick="event.stopPropagation()" onchange="handleSelect(event, '${m.name}')">
+                        <div class="med-content">
                             <span class="med-name">${m.name}</span>
                             <span class="generic-name">${m.gen}</span>
                         </div>
-                        <div class="min-order">Min: ${m.min}</div>
                         <div class="price">£${m.price.toFixed(2)}</div>
                     </div>`;
                 });
-                container.innerHTML += html + `</div>`;
+                finalHtml += `</div>`;
             });
+            container.innerHTML = finalHtml;
         }
 
-        // Admin Auth
-        function handleAdmin() {
-            if (!isAdminLoggedIn) {
-                const pass = prompt("Enter Admin Password:");
-                if (pass === "68") {
-                    isAdminLoggedIn = true;
-                    document.getElementById('adminPanel').style.display = "block";
-                    document.getElementById('adminToggle').innerText = "Logout";
-                } else {
-                    alert("Incorrect Password!");
-                }
-            } else {
-                isAdminLoggedIn = false;
-                document.getElementById('adminPanel').style.display = "none";
-                document.getElementById('adminToggle').innerText = "+ Admin Mode";
+        function toggleStock() {
+            if (prompt("Password:") === "68") {
+                isStockSelecting = !isStockSelecting;
+                document.body.classList.toggle('stock-mode-active', isStockSelecting);
+                document.getElementById('stockBtn').innerText = isStockSelecting ? "Save List" : "Stock View";
+                render();
             }
         }
 
-        // Send Data to Google Sheet via Apps Script
-        async function sendToCloud() {
+        function deselectAll() {
+            if(confirm("Deselect all?")) {
+                selectedItems = [];
+                localStorage.setItem('my_stock_list', JSON.stringify(selectedItems));
+                render();
+            }
+        }
+
+        function handleSelect(e, name) {
+            if(e.target.checked) { if(!selectedItems.includes(name)) selectedItems.push(name); }
+            else { selectedItems = selectedItems.filter(i => i !== name); }
+            localStorage.setItem('my_stock_list', JSON.stringify(selectedItems));
+        }
+
+        function showDetails(n, g, p, m) {
+            if(isStockSelecting) return;
+            document.getElementById('modalBrand').innerText = n;
+            document.getElementById('modalGen').innerText = g;
+            document.getElementById('modalPrice').innerText = `£${p.toFixed(2)}`;
+            document.getElementById('modalMin').innerText = m;
+            document.getElementById('modalTotal').innerText = `£${(p*m).toFixed(2)}`;
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
+        function showAdmin() { if (prompt("Pass:") === "68") document.getElementById('adminPanel').style.display = "block"; }
+        function closeAdmin() { document.getElementById('adminPanel').style.display = "none"; }
+
+        function filterMeds() {
+            const q = document.getElementById('searchBar').value.toLowerCase();
+            const items = document.querySelectorAll('.med-item');
+            // পারফরম্যান্সের জন্য requestAnimationFrame ব্যবহার করা হয়েছে
+            requestAnimationFrame(() => {
+                items.forEach(it => {
+                    const match = it.textContent.toLowerCase().includes(q);
+                    it.style.display = match ? "flex" : "none";
+                });
+            });
+        }
+
+        async function saveData() {
             const data = {
-                name: document.getElementById('newName').value.trim(),
-                gen: document.getElementById('newGen').value.trim(),
+                name: document.getElementById('newName').value,
+                gen: document.getElementById('newGen').value,
                 price: document.getElementById('newPrice').value,
                 min: document.getElementById('newMin').value,
                 cat: document.getElementById('newCat').value
             };
-
-            if(!data.name || !data.price) return alert("Please fill Name and Price!");
-
-            alert("Sending to Google Sheet... Please wait ~10 seconds.");
-            
-            try {
-                await fetch(SCRIPT_URL, { 
-                    method: 'POST', 
-                    mode: 'no-cors', 
-                    body: JSON.stringify(data) 
-                });
-                alert("Data saved successfully! The list will update shortly.");
-                location.reload();
-            } catch(e) {
-                alert("Error connecting to cloud!");
-            }
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+            location.reload();
         }
 
-        // Calculation Popup
-        function calculate(name, price, min) {
-            const total = (price * min).toFixed(2);
-            alert(`BRAND: ${name}\n------------------------\nPRICE: £${price.toFixed(2)}\nMIN ORDER: ${min}\n------------------------\nTOTAL COST: £${total}`);
-        }
-
-        // Real-time Search
-        function filterMeds() {
-            let q = document.getElementById('searchBar').value.toLowerCase();
-            document.querySelectorAll('.med-item').forEach(it => {
-                it.style.display = it.innerText.toLowerCase().includes(q) ? "grid" : "none";
-            });
-        }
-
-        // Start App
         loadData();
     </script>
 </body>
