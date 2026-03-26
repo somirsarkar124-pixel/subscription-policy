@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medicine Tracker | Cloud Sync</title>
+    <title>Medicine Manager | Cloud Sync</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -17,57 +17,60 @@
             display: flex; flex-direction: column; align-items: center; margin: 0;
         }
 
-        /* Admin Header */
-        .admin-header { width: 100%; max-width: 700px; display: flex; justify-content: flex-end; margin-bottom: 10px; }
+        /* Admin Controls */
+        .admin-header { width: 100%; max-width: 700px; display: flex; justify-content: flex-end; margin-bottom: 15px; }
         .admin-btn {
             background: transparent; color: var(--secondary); border: 1px solid var(--secondary);
-            padding: 6px 15px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; transition: 0.3s;
+            padding: 8px 18px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; transition: 0.3s;
         }
         .admin-btn:hover { border-color: var(--primary); color: var(--primary); }
 
         /* Admin Panel Form */
         .admin-panel {
-            background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 25px;
+            background: var(--card); padding: 25px; border-radius: 15px; margin-bottom: 30px;
             width: 100%; max-width: 700px; display: none; border: 1px solid var(--primary);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6); box-sizing: border-box;
         }
-        .admin-panel input {
-            padding: 12px; margin: 5px 0; border-radius: 8px; border: 1px solid #334155;
-            background: #0f172a; color: white; width: 100%; box-sizing: border-box;
+        .admin-panel input, .admin-panel select {
+            padding: 14px; margin: 8px 0; border-radius: 10px; border: 1px solid #334155;
+            background: #0f172a; color: white; width: 100%; box-sizing: border-box; font-size: 1rem;
         }
+        .admin-panel label { font-size: 0.85rem; color: var(--secondary); margin-top: 10px; display: block; }
 
-        /* Search Section */
-        .search-container { width: 100%; max-width: 700px; margin-bottom: 30px; position: sticky; top: 10px; z-index: 100; }
+        /* Search Bar */
+        .search-container { width: 100%; max-width: 700px; margin-bottom: 35px; position: sticky; top: 15px; z-index: 100; }
         #searchBar {
-            width: 100%; padding: 15px 20px; font-size: 16px; border-radius: 12px;
+            width: 100%; padding: 18px 25px; font-size: 16px; border-radius: 15px;
             border: 2px solid var(--primary); background: var(--card); color: white; outline: none;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.5); box-sizing: border-box;
         }
 
-        /* List Items */
+        /* List Styling */
         .med-list { width: 100%; max-width: 700px; }
-        .category-group { margin-bottom: 30px; width: 100%; }
+        .category-group { margin-bottom: 40px; width: 100%; }
         .category-title {
-            color: var(--primary); font-size: 0.85rem; margin-bottom: 12px;
-            text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 1px solid rgba(56,189,248,0.2);
-            padding-bottom: 5px;
+            color: var(--primary); font-size: 0.9rem; margin-bottom: 15px;
+            text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid rgba(56,189,248,0.2);
+            padding-bottom: 8px; font-weight: 600;
         }
         .med-item {
-            background: var(--card); margin-bottom: 8px; padding: 12px 18px;
-            border-radius: 10px; display: grid; grid-template-columns: 2.5fr 1.2fr 1fr;
-            align-items: center; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s; cursor: pointer;
+            background: var(--card); margin-bottom: 10px; padding: 15px 20px;
+            border-radius: 12px; display: grid; grid-template-columns: 2.5fr 1.2fr 1fr;
+            align-items: center; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s ease; cursor: pointer;
         }
-        .med-item:hover { border-color: var(--primary); transform: translateY(-2px); background: #243147; }
-        .med-name { font-weight: 600; display: block; color: #fff; }
-        .generic-name { font-size: 0.8rem; color: var(--secondary); font-style: italic; }
-        .min-order { font-size: 0.85rem; color: var(--accent); text-align: center; }
-        .price { color: var(--primary); font-weight: 700; text-align: right; font-size: 1.1rem; }
+        .med-item:hover { border-color: var(--primary); transform: translateY(-3px); background: #243147; }
+        .med-name { font-weight: 600; display: block; color: #fff; font-size: 1.1rem; }
+        .generic-name { font-size: 0.85rem; color: var(--secondary); font-style: italic; margin-top: 2px; display: block; }
+        .min-order { font-size: 0.9rem; color: var(--accent); text-align: center; font-weight: 500; }
+        .price { color: var(--primary); font-weight: 700; text-align: right; font-size: 1.2rem; }
 
-        .loader { color: var(--primary); margin-top: 50px; font-weight: bold; letter-spacing: 1px; }
+        .loader { color: var(--primary); margin-top: 60px; font-weight: bold; letter-spacing: 2px; animation: blink 1.5s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
         @media (max-width: 600px) {
-            .med-item { grid-template-columns: 1.8fr 1fr 1fr; padding: 10px 15px; }
-            .med-name { font-size: 0.95rem; }
+            .med-item { grid-template-columns: 1.8fr 1fr 1fr; padding: 12px 15px; }
+            .med-name { font-size: 1rem; }
+            .price { font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -78,35 +81,44 @@
     </div>
 
     <div id="adminPanel" class="admin-panel">
-        <h3 style="margin-top:0; color:var(--primary)">Cloud Entry Form</h3>
-        <input type="text" id="newName" placeholder="Brand Name">
-        <input type="text" id="newGen" placeholder="Generic Name">
-        <input type="text" id="newPrice" placeholder="Price (e.g. 1.20)">
-        <input type="text" id="newMin" placeholder="Minimum Quantity">
-        <input type="text" id="newCat" placeholder="Category (e.g. General)">
-        <button onclick="sendToCloud()" style="width:100%; padding:12px; background:var(--primary); border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:10px">Save to Google Sheet</button>
+        <h3 style="margin-top:0; color:var(--primary); border-bottom: 1px solid #334155; padding-bottom: 10px;">Add New Entry</h3>
+        
+        <input type="text" id="newName" placeholder="Brand Name (e.g. Easium)">
+        <input type="text" id="newGen" placeholder="Generic Name (e.g. Diazepam)">
+        <input type="number" id="newPrice" step="0.01" placeholder="Price per unit (e.g. 1.20)">
+        <input type="number" id="newMin" placeholder="Minimum Quantity (e.g. 10)">
+        
+        <label>Select Category:</label>
+        <select id="newCat">
+            <option value="Anxiety & Benzodiazepines">Anxiety & Benzodiazepines</option>
+            <option value="Pain Relief">Pain Relief</option>
+            <option value="Sleep & Stimulants">Sleep & Stimulants</option>
+        </select>
+
+        <button onclick="sendToCloud()" style="width:100%; padding:15px; background:var(--primary); border:none; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:20px; color: #0f172a; font-size: 1rem;">SAVE TO GOOGLE SHEET</button>
     </div>
 
     <div class="search-container">
-        <input type="text" id="searchBar" placeholder="Search Brand or Generic..." onkeyup="filterMeds()">
+        <input type="text" id="searchBar" placeholder="Search brands or generic..." onkeyup="filterMeds()">
     </div>
 
-    <div id="loading" class="loader">FETCHING FROM CLOUD...</div>
+    <div id="loading" class="loader">SYNCING DATA...</div>
     <div class="med-list" id="listContainer"></div>
 
     <script>
-        // আপনার লিঙ্কগুলো এখানে আপডেট করা হয়েছে
+        // আপনার লিঙ্কগুলো এখানে ইন্টিগ্রেট করা হয়েছে
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzt6y23vRLcYlAYA0U8IBtoZPHuNrp3CrwJVGdQF-bd4Cd2qZf0gEnjYs_smPuKQM4P/exec'; 
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQixk_fY4qSEvivXg26oQEVZmxpUadKqyGB2EcJDcwweu3CsyE-Ued2NhSZtDAWR9Ndsl045NjUiwpe/pub?output=csv';
 
         let isAdminLoggedIn = false;
 
+        // Fetch Data from Google Sheet CSV
         async function loadData() {
             try {
                 const res = await fetch(CSV_URL);
                 const text = await res.text();
                 
-                // CSV Parsing
+                // CSV Parsing Logic
                 const rows = text.split(/\r?\n/).slice(1);
                 const meds = rows.map(r => {
                     const c = r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
@@ -123,22 +135,35 @@
                 renderMeds(meds);
                 document.getElementById('loading').style.display = 'none';
             } catch (e) {
-                document.getElementById('loading').innerText = "DATABASE OFFLINE";
+                document.getElementById('loading').innerText = "CONNECTION ERROR";
                 console.error(e);
             }
         }
 
+        // Display Data on Screen
         function renderMeds(meds) {
             const container = document.getElementById('listContainer');
             container.innerHTML = "";
-            const categories = [...new Set(meds.map(m => m.cat))];
+            
+            // Get unique categories and sort them as per your list
+            const categories = ["Anxiety & Benzodiazepines", "Pain Relief", "Sleep & Stimulants"];
+            
+            // Add any other categories found in sheet that are not in the main 3
+            const extraCats = [...new Set(meds.map(m => m.cat))].filter(c => !categories.includes(c));
+            const finalCategories = [...categories, ...extraCats];
 
-            categories.forEach(cat => {
+            finalCategories.forEach(cat => {
+                const catMeds = meds.filter(m => m.cat === cat);
+                if(catMeds.length === 0) return;
+
                 let html = `<div class="category-group"><h3 class="category-title">${cat}</h3>`;
-                meds.filter(m => m.cat === cat).forEach(m => {
+                catMeds.forEach(m => {
                     html += `
                     <div class="med-item" onclick="calculate('${m.name}', ${m.price}, ${m.min})">
-                        <div><span class="med-name">${m.name}</span><span class="generic-name">${m.gen}</span></div>
+                        <div>
+                            <span class="med-name">${m.name}</span>
+                            <span class="generic-name">${m.gen}</span>
+                        </div>
                         <div class="min-order">Min: ${m.min}</div>
                         <div class="price">£${m.price.toFixed(2)}</div>
                     </div>`;
@@ -147,12 +172,16 @@
             });
         }
 
+        // Admin Auth
         function handleAdmin() {
             if (!isAdminLoggedIn) {
-                if (prompt("Admin Pass:") === "68") {
+                const pass = prompt("Enter Admin Password:");
+                if (pass === "68") {
                     isAdminLoggedIn = true;
                     document.getElementById('adminPanel').style.display = "block";
                     document.getElementById('adminToggle').innerText = "Logout";
+                } else {
+                    alert("Incorrect Password!");
                 }
             } else {
                 isAdminLoggedIn = false;
@@ -161,32 +190,40 @@
             }
         }
 
+        // Send Data to Google Sheet via Apps Script
         async function sendToCloud() {
             const data = {
-                name: document.getElementById('newName').value,
-                gen: document.getElementById('newGen').value,
+                name: document.getElementById('newName').value.trim(),
+                gen: document.getElementById('newGen').value.trim(),
                 price: document.getElementById('newPrice').value,
                 min: document.getElementById('newMin').value,
                 cat: document.getElementById('newCat').value
             };
 
-            if(!data.name || !data.price) return alert("Fill Name and Price!");
+            if(!data.name || !data.price) return alert("Please fill Name and Price!");
 
-            alert("Syncing with Google Sheet... Please wait 10 seconds.");
+            alert("Sending to Google Sheet... Please wait ~10 seconds.");
             
             try {
-                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-                alert("Saved Successfully! Reloading...");
+                await fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify(data) 
+                });
+                alert("Data saved successfully! The list will update shortly.");
                 location.reload();
             } catch(e) {
-                alert("Error saving data!");
+                alert("Error connecting to cloud!");
             }
         }
 
-        function calculate(n, p, m) {
-            alert(`MEDICINE: ${n}\n------------------\nPRICE: £${p.toFixed(2)}\nQUANTITY: ${m}\n------------------\nTOTAL: £${(p*m).toFixed(2)}`);
+        // Calculation Popup
+        function calculate(name, price, min) {
+            const total = (price * min).toFixed(2);
+            alert(`BRAND: ${name}\n------------------------\nPRICE: £${price.toFixed(2)}\nMIN ORDER: ${min}\n------------------------\nTOTAL COST: £${total}`);
         }
 
+        // Real-time Search
         function filterMeds() {
             let q = document.getElementById('searchBar').value.toLowerCase();
             document.querySelectorAll('.med-item').forEach(it => {
@@ -194,6 +231,7 @@
             });
         }
 
+        // Start App
         loadData();
     </script>
 </body>
