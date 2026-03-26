@@ -25,6 +25,38 @@
             align-items: center;
         }
 
+        .admin-btn {
+            background: transparent;
+            color: var(--secondary);
+            border: 1px solid var(--secondary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            margin-bottom: 10px;
+        }
+
+        .admin-panel {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 700px;
+            display: none;
+            border: 1px dashed var(--primary);
+        }
+
+        .admin-panel input {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            width: calc(33% - 20px);
+        }
+
         .search-container {
             width: 100%;
             max-width: 700px;
@@ -43,13 +75,10 @@
             background: var(--card);
             color: white;
             outline: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .med-list { width: 100%; max-width: 700px; }
-
         .category-group { margin-bottom: 30px; }
-
         .category-title {
             color: var(--primary);
             font-size: 0.9rem;
@@ -66,215 +95,212 @@
             padding: 12px 18px;
             border-radius: 10px;
             display: grid;
-            grid-template-columns: 2.5fr 1fr 1fr 0.8fr;
+            grid-template-columns: 2.5fr 1fr 1fr 0.8fr 50px;
             align-items: center;
             border: 1px solid rgba(255,255,255,0.05);
             transition: 0.2s ease;
             cursor: pointer;
         }
 
-        .med-item:hover {
-            border-color: var(--primary);
-            background: #243147;
-            transform: scale(1.01);
+        .med-item:hover { border-color: var(--primary); background: #243147; }
+        .med-name { font-weight: 600; display: block; }
+        .generic-name { font-size: 0.8rem; color: var(--secondary); font-style: italic; }
+        .min-order { font-size: 0.85rem; color: var(--accent); text-align: center; }
+        .price { color: var(--primary); font-weight: 700; text-align: right; }
+        
+        .edit-btn { 
+            display: none; 
+            background: #334155; 
+            color: var(--accent); 
+            border: none; 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            font-size: 10px;
+            margin-left: 10px;
         }
 
-        .med-name { font-weight: 600; display: block; font-size: 1.05rem; }
-        .generic-name { font-size: 0.8rem; color: var(--secondary); font-style: italic; }
-        
-        .min-order { font-size: 0.85rem; color: var(--accent); text-align: center; font-weight: 500; }
-        .strip-info { font-size: 0.85rem; color: #cbd5e1; text-align: center; }
-        .price { color: var(--primary); font-weight: 700; text-align: right; font-size: 1.1rem; }
-
-        .no-result { text-align: center; color: var(--secondary); margin-top: 30px; display: none; }
+        .no-result { text-align: center; color: var(--secondary); display: none; }
 
         @media (max-width: 600px) {
-            .med-item { grid-template-columns: 2fr 1fr 1fr; }
-            .strip-info { display: none; }
+            .med-item { grid-template-columns: 2fr 1fr 1fr 50px; }
+            .admin-panel input { width: 90%; }
         }
     </style>
 </head>
 <body>
 
-    <h2 style="margin-bottom: 20px; color: var(--primary);">Medicine Calculator</h2>
-    <p style="font-size: 0.8rem; color: var(--secondary); margin-bottom: 15px;">Click a medicine to see the total price</p>
+    <button class="admin-btn" onclick="openAdmin()">+ Admin Mode</button>
+
+    <div id="adminPanel" class="admin-panel">
+        <h4 id="formTitle" style="margin:0 0 10px 0">Add New Medicine</h4>
+        <input type="text" id="newName" placeholder="Brand Name">
+        <input type="text" id="newGen" placeholder="Generic Name">
+        <input type="text" id="newPrice" placeholder="Price (e.g. 1.2)">
+        <input type="text" id="newMin" placeholder="Min Qty">
+        <input type="text" id="newStrip" placeholder="Strip Info">
+        <button onclick="saveMed()" style="padding:10px; background:var(--primary); border:none; border-radius:5px; cursor:pointer; font-weight:bold">Save Medicine</button>
+        <button onclick="closeAdmin()" style="background:transparent; color:white; border:none; cursor:pointer; font-size:12px">Cancel</button>
+    </div>
+
+    <h2 style="color: var(--primary); margin-bottom: 20px;">Medicine Calculator</h2>
 
     <div class="search-container">
         <input type="text" id="searchBar" placeholder="Search Brand or Generic..." onkeyup="filterMeds()">
     </div>
 
     <div class="med-list" id="medList">
-        
+        <div class="category-group" id="addedSection" style="display:none">
+            <h3 class="category-title">Custom Added</h3>
+            <div id="dynamicMeds"></div>
+        </div>
+
         <div class="category-group">
             <h3 class="category-title">Anxiety & Benzodiazepines</h3>
             
-            <div class="med-item" onclick="calculateTotal('Easium Diaz', 0.90, 40)" data-search="easium diazepam">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="easium diazepam" data-price="0.90" data-min="40">
                 <div><span class="med-name">Easium Diaz</span><span class="generic-name">Diazepam</span></div>
-                <div class="min-order">Min: 40</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£0.90</div>
+                <div class="min-order">Min: 40</div><div class="price">£0.90</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Sedil 5mg', 1, 20)" data-search="sedil diazepam">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="sedil diazepam" data-price="1" data-min="20">
                 <div><span class="med-name">Sedil 5mg</span><span class="generic-name">Diazepam</span></div>
-                <div class="min-order">Min: 20</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1</div>
+                <div class="min-order">Min: 20</div><div class="price">£1</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Alprax 1mg', 1.4, 10)" data-search="alprax alprazolam">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="alprax alprazolam" data-price="1.4" data-min="10">
                 <div><span class="med-name">Alprax 1mg</span><span class="generic-name">Alprazolam</span></div>
-                <div class="min-order">-</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1.4</div>
+                <div class="min-order">-</div><div class="price">£1.4</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Alprax 2mg', 1.8, 10)" data-search="alprax alprazolam">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="alprax alprazolam" data-price="1.8" data-min="10">
                 <div><span class="med-name">Alprax 2mg</span><span class="generic-name">Alprazolam</span></div>
-                <div class="min-order">-</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1.8</div>
+                <div class="min-order">-</div><div class="price">£1.8</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Nitraz 5mg', 1, 10)" data-search="nitraz nitrazepam">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="nitraz nitrazepam" data-price="1" data-min="10">
                 <div><span class="med-name">Nitraz 5mg</span><span class="generic-name">Nitrazepam</span></div>
-                <div class="min-order">-</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1</div>
+                <div class="min-order">-</div><div class="price">£1</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Bromazepam', 1, 10)" data-search="bromazepam">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="bromazepam lexotanil" data-price="1" data-min="10">
                 <div><span class="med-name">Bromazepam</span><span class="generic-name">Lexotanil</span></div>
-                <div class="min-order">-</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1</div>
+                <div class="min-order">-</div><div class="price">£1</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Midazolam', 1.4, 10)" data-search="midazolam">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="midazolam dormicum" data-price="1.4" data-min="10">
                 <div><span class="med-name">Midazolam</span><span class="generic-name">Dormicum</span></div>
-                <div class="min-order">-</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1.4</div>
+                <div class="min-order">-</div><div class="price">£1.4</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Rivotril', 1.6, 10)" data-search="rivotril clonazepam">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="rivotril clonazepam" data-price="1.6" data-min="10">
                 <div><span class="med-name">Rivotril</span><span class="generic-name">Clonazepam</span></div>
-                <div class="min-order">-</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1.6</div>
+                <div class="min-order">-</div><div class="price">£1.6</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Ativn Loraz', 1.5, 30)" data-search="ativn lorazepam">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="ativn lorazepam" data-price="1.5" data-min="30">
                 <div><span class="med-name">Ativn Loraz</span><span class="generic-name">Lorazepam</span></div>
-                <div class="min-order">Min: 30</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1.5</div>
+                <div class="min-order">Min: 30</div><div class="price">£1.5</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
-            
-            <div class="med-item" onclick="calculateTotal('Rlam 1mg', 1.3, 15)" data-search="rlam alprazolam">
+
+            <div class="med-item" onclick="calculateTotal(this)" data-search="rlam alprazolam" data-price="1.3" data-min="15">
                 <div><span class="med-name">Rlam 1mg</span><span class="generic-name">Alprazolam</span></div>
-                <div class="min-order">Min: 15</div>
-                <div class="strip-info">15/Strip</div>
-                <div class="price">£1.3</div>
+                <div class="min-order">Min: 15</div><div class="price">£1.3</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Etizolam', 1.5, 10)" data-search="etizolam">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="etizolam etilaam" data-price="1.5" data-min="10">
                 <div><span class="med-name">Etizolam</span><span class="generic-name">Etilaam</span></div>
-                <div class="min-order">-</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1.5</div>
+                <div class="min-order">-</div><div class="price">£1.5</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Valium Dows', 1.5, 10)" data-search="valium diazepam">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="valium diazepam" data-price="1.5" data-min="10">
                 <div><span class="med-name">Valium Dows</span><span class="generic-name">Diazepam</span></div>
-                <div class="min-order">-</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1.5</div>
+                <div class="min-order">-</div><div class="price">£1.5</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
         </div>
 
         <div class="category-group">
             <h3 class="category-title">Pain Relief</h3>
             
-            <div class="med-item" onclick="calculateTotal('Pregabalin', 1, 15)" data-search="pregabalin lyrica">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="pregabalin lyrica" data-price="1" data-min="15">
                 <div><span class="med-name">Pregabalin</span><span class="generic-name">Lyrica</span></div>
-                <div class="min-order">Min: 15</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1</div>
+                <div class="min-order">Min: 15</div><div class="price">£1</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Royal 225mg', 0.5, 10)" data-search="royal tramadol">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="royal tramadol" data-price="0.5" data-min="10">
                 <div><span class="med-name">Royal 225mg</span><span class="generic-name">Tramadol HCl</span></div>
-                <div class="min-order">-</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£0.5</div>
+                <div class="min-order">-</div><div class="price">£0.5</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Tramadol', 1.5, 10)" data-search="tramadol">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="tramadol ultram" data-price="1.5" data-min="10">
                 <div><span class="med-name">Tramadol</span><span class="generic-name">Ultram</span></div>
-                <div class="min-order">-</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1.5</div>
+                <div class="min-order">-</div><div class="price">£1.5</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Tapenta 200mg', 1.4, 10)" data-search="tapenta tapentadol">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="tapenta tapentadol" data-price="1.4" data-min="10">
                 <div><span class="med-name">Tapenta 200mg</span><span class="generic-name">Tapentadol</span></div>
-                <div class="min-order">-</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1.4</div>
+                <div class="min-order">-</div><div class="price">£1.4</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Aspadol 200mg', 1.5, 10)" data-search="aspadol tapentadol">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="aspadol tapentadol" data-price="1.5" data-min="10">
                 <div><span class="med-name">Aspadol 200mg</span><span class="generic-name">Tapentadol</span></div>
-                <div class="min-order">-</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1.5</div>
+                <div class="min-order">-</div><div class="price">£1.5</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Co-codamol', 1.3, 10)" data-search="co-codamol codeine">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="co-codamol codeine" data-price="1.3" data-min="10">
                 <div><span class="med-name">Co-codamol</span><span class="generic-name">Codeine Mix</span></div>
-                <div class="min-order">-</div>
-                <div class="strip-info">16/Strip</div>
-                <div class="price">£1.3</div>
+                <div class="min-order">-</div><div class="price">£1.3</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
         </div>
 
         <div class="category-group">
             <h3 class="category-title">Sleep & Stimulants</h3>
-
-            <div class="med-item" onclick="calculateTotal('Ritalin', 3, 10)" data-search="ritalin methylphenidate">
+            
+            <div class="med-item" onclick="calculateTotal(this)" data-search="ritalin methylphenidate" data-price="3" data-min="10">
                 <div><span class="med-name">Ritalin</span><span class="generic-name">Methylphenidate</span></div>
-                <div class="min-order">-</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£3</div>
+                <div class="min-order">-</div><div class="price">£3</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Zopi 10mg', 0.90, 14)" data-search="zopi zopiclone">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="zopi zopiclone" data-price="0.90" data-min="14">
                 <div><span class="med-name">Zopi 10mg</span><span class="generic-name">Zopiclone</span></div>
-                <div class="min-order">Min: 14</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£0.90</div>
+                <div class="min-order">Min: 14</div><div class="price">£0.90</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Temaz', 1.5, 14)" data-search="temaz temazepam">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="temaz temazepam" data-price="1.5" data-min="14">
                 <div><span class="med-name">Temaz</span><span class="generic-name">Temazepam</span></div>
-                <div class="min-order">Min: 14</div>
-                <div class="strip-info">14/Strip</div>
-                <div class="price">£1.5</div>
+                <div class="min-order">Min: 14</div><div class="price">£1.5</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Pase2', 1.4, 15)" data-search="pase2 diazepam">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="pase2 diazepam" data-price="1.4" data-min="15">
                 <div><span class="med-name">Pase2</span><span class="generic-name">Diazepam</span></div>
-                <div class="min-order">Min: 15</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1.4</div>
+                <div class="min-order">Min: 15</div><div class="price">£1.4</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
 
-            <div class="med-item" onclick="calculateTotal('Modafinil', 1, 10)" data-search="modafinil">
+            <div class="med-item" onclick="calculateTotal(this)" data-search="modafinil provigil" data-price="1" data-min="10">
                 <div><span class="med-name">Modafinil</span><span class="generic-name">Provigil</span></div>
-                <div class="min-order">-</div>
-                <div class="strip-info">10/Strip</div>
-                <div class="price">£1</div>
+                <div class="min-order">-</div><div class="price">£1</div>
+                <button class="edit-btn" onclick="editMed(event, this)">Edit</button>
             </div>
         </div>
     </div>
@@ -282,32 +308,99 @@
     <p id="noResult" class="no-result">No medicine found.</p>
 
     <script>
-        function calculateTotal(name, price, min) {
-            // If min is 10 (default) it means there was no specific min in your list
-            let total = (price * min).toFixed(2);
-            let message = `Medicine: ${name}\nUnit Price: £${price}\nQuantity: ${min}\n----------------------\nTotal Price: £${total}`;
-            alert(message);
+        let currentEditItem = null;
+
+        function openAdmin() {
+            let p = prompt("Enter Password:");
+            if(p === "68") {
+                document.getElementById('adminPanel').style.display = "block";
+                toggleEditButtons(true);
+            } else alert("Wrong Pass!");
+        }
+
+        function closeAdmin() {
+            document.getElementById('adminPanel').style.display = "none";
+            toggleEditButtons(false);
+            resetForm();
+        }
+
+        function toggleEditButtons(show) {
+            let btns = document.getElementsByClassName('edit-btn');
+            for(let btn of btns) btn.style.display = show ? "block" : "none";
+        }
+
+        function editMed(event, btn) {
+            event.stopPropagation();
+            currentEditItem = btn.parentElement;
+            document.getElementById('formTitle').innerText = "Edit Mode";
+            document.getElementById('newName').value = currentEditItem.querySelector('.med-name').innerText;
+            document.getElementById('newGen').value = currentEditItem.querySelector('.generic-name').innerText;
+            document.getElementById('newPrice').value = currentEditItem.getAttribute('data-price');
+            document.getElementById('newMin').value = currentEditItem.getAttribute('data-min');
+            document.getElementById('adminPanel').scrollIntoView({behavior: "smooth"});
+        }
+
+        function saveMed() {
+            let name = document.getElementById('newName').value.trim();
+            let gen = document.getElementById('newGen').value.trim();
+            let pr = document.getElementById('newPrice').value.trim();
+            let min = document.getElementById('newMin').value || 10;
+
+            if(!name || !pr) return alert("Fill Name & Price");
+
+            if (currentEditItem) {
+                currentEditItem.querySelector('.med-name').innerText = name;
+                currentEditItem.querySelector('.generic-name').innerText = gen;
+                currentEditItem.querySelector('.price').innerText = "£" + pr;
+                currentEditItem.querySelector('.min-order').innerText = min === "10" ? "-" : "Min: " + min;
+                currentEditItem.setAttribute('data-price', pr);
+                currentEditItem.setAttribute('data-min', min);
+                currentEditItem.setAttribute('data-search', (name + ' ' + gen).toLowerCase());
+                alert("Updated!");
+            } else {
+                let div = document.createElement('div');
+                div.className = 'med-item';
+                div.setAttribute('data-search', (name + ' ' + gen).toLowerCase());
+                div.setAttribute('data-price', pr);
+                div.setAttribute('data-min', min);
+                div.onclick = function() { calculateTotal(this); };
+                div.innerHTML = `<div><span class="med-name">${name}</span><span class="generic-name">${gen}</span></div>
+                                 <div class="min-order">Min: ${min}</div><div class="price">£${pr}</div>
+                                 <button class="edit-btn" style="display:block" onclick="editMed(event, this)">Edit</button>`;
+                document.getElementById('dynamicMeds').appendChild(div);
+                document.getElementById('addedSection').style.display = "block";
+                alert("Added!");
+            }
+            resetForm();
+        }
+
+        function resetForm() {
+            currentEditItem = null;
+            document.getElementById('formTitle').innerText = "Add New Medicine";
+            document.getElementById('newName').value = "";
+            document.getElementById('newGen').value = "";
+            document.getElementById('newPrice').value = "";
+            document.getElementById('newMin').value = "";
+        }
+
+        function calculateTotal(item) {
+            closeAdmin();
+            let name = item.querySelector('.med-name').innerText;
+            let price = parseFloat(item.getAttribute('data-price'));
+            let min = parseInt(item.getAttribute('data-min')) || 1;
+            alert(`Medicine: ${name}\nUnit Price: £${price}\nQuantity: ${min}\n----------------------\nTotal: £${(price * min).toFixed(2)}`);
         }
 
         function filterMeds() {
             let input = document.getElementById('searchBar').value.toLowerCase();
             let items = document.getElementsByClassName('med-item');
-            let categories = document.getElementsByClassName('category-group');
             let found = 0;
-
             for (let i = 0; i < items.length; i++) {
-                let data = items[i].getAttribute('data-search') + items[i].innerText.toLowerCase();
-                if (data.includes(input)) {
+                let text = items[i].innerText.toLowerCase() + items[i].getAttribute('data-search');
+                if (text.includes(input)) {
                     items[i].style.display = "grid";
                     found++;
-                } else {
-                    items[i].style.display = "none";
-                }
-            }
-
-            for (let j = 0; j < categories.length; j++) {
-                let visible = categories[j].querySelectorAll('.med-item[style*="display: grid"]');
-                categories[j].style.display = visible.length > 0 ? "block" : "none";
+                } else items[i].style.display = "none";
             }
             document.getElementById('noResult').style.display = found > 0 ? "none" : "block";
         }
