@@ -2,206 +2,310 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Medicine Hub Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Pharma Invoice</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        :root {
-            --bg: #030712; --card: #111827; --primary: #0ea5e9;
-            --secondary: #94a3b8; --accent: #f59e0b; --text: #f8fafc;
-            --danger: #ef4444;
-        }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body {
-            background-color: var(--bg); color: var(--text);
-            font-family: 'Plus Jakarta Sans', sans-serif; padding: 15px;
-            display: flex; flex-direction: column; align-items: center; margin: 0;
-            background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #030712 100%);
-        }
-        .header-controls { width: 100%; max-width: 600px; display: flex; justify-content: space-between; margin-bottom: 20px; gap: 8px; }
-        .btn-action {
-            background: rgba(255,255,255,0.05); color: var(--secondary); border: 1px solid rgba(255,255,255,0.1);
-            padding: 10px 15px; border-radius: 14px; cursor: pointer; font-size: 0.8rem; font-weight: 600;
-        }
-        .btn-deselect { display: none; color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
-        .search-container { width: 100%; max-width: 600px; margin-bottom: 25px; position: sticky; top: 10px; z-index: 100; }
-        #searchBar {
-            width: 100%; padding: 16px 22px; font-size: 16px; border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.1); background: rgba(17, 24, 39, 0.9); 
-            color: white; outline: none; backdrop-filter: blur(15px);
-        }
-        .med-list { width: 100%; max-width: 600px; }
-        .category-group { margin-bottom: 30px; }
-        .category-title { color: var(--primary); font-size: 0.75rem; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; opacity: 0.7; }
-        .med-item {
-            background: var(--card); margin-bottom: 10px; padding: 16px 18px;
-            border-radius: 18px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,0.03); 
-        }
-        .stock-checkbox { display: none; margin-right: 15px; width: 20px; height: 20px; }
-        .stock-mode-active .stock-checkbox { display: block; }
-        .stock-mode-active .btn-deselect { display: block; }
-        .med-content { flex: 1; min-width: 0; }
-        .med-name { font-weight: 700; color: #fff; font-size: 1.05rem; }
-        .generic-name { font-size: 0.8rem; color: var(--secondary); display: block; }
-        .price { color: var(--primary); font-weight: 800; font-size: 1.2rem; }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(10px); }
-        .modal-card { background: #111827; width: 85%; max-width: 380px; padding: 30px; border-radius: 28px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
-        .total-box { background: var(--primary); color: #000; padding: 18px; border-radius: 16px; margin-top: 20px; font-weight: 800; font-size: 1.4rem; }
-        .loader { color: var(--primary); margin-top: 100px; font-weight: 800; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f7; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .setup-card { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 700px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid #0046ad; }
         
-        /* Dropdown style */
-        select { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: none; background: #030712; color: white; appearance: none; }
+        #invoice { 
+            background: white; width: 794px; min-height: 1000px; padding: 50px; display: none; 
+            color: #1a1a1a; position: relative; border: 1px solid #ddd; box-sizing: border-box;
+        }
+
+        #watermark-display {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg);
+            width: 70%; opacity: 0.07; pointer-events: none; z-index: 0; display: none; object-fit: contain;
+        }
+        
+        .invoice-content { position: relative; z-index: 1; }
+        .header-section { display: flex; justify-content: space-between; border-bottom: 3px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
+        .brand h1 { font-size: 32px; margin: 0; color: #0046ad; text-transform: uppercase; font-weight: 800; }
+        .invoice-meta { text-align: right; }
+        
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 30px; }
+        .details-box h4 { margin: 0 0 8px 0; border-bottom: 1px solid #000; padding-bottom: 2px; text-transform: uppercase; font-size: 14px; }
+        
+        .table-style { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .table-style th { background: #f2f2f2; padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; }
+        .table-style td { padding: 12px; border: 1px solid #ddd; font-size: 14px; }
+
+        .summary-wrapper { display: flex; justify-content: space-between; margin-top: 30px; align-items: flex-start; }
+        .payment-info { font-size: 13px; line-height: 1.6; border: 1.5px solid #0046ad; padding: 12px; border-radius: 6px; background: #f0f5ff; width: 320px; }
+        .summary-box { width: 250px; line-height: 2.2; }
+        .grand-total { font-size: 22px; font-weight: bold; border-top: 2px solid #333; color: #0046ad; }
+
+        /* Form Controls */
+        .form-row { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-end; }
+        .form-group { flex: 1; display: flex; flex-direction: column; }
+        label { font-size: 11px; font-weight: bold; color: #555; margin-bottom: 4px; }
+        input, select, textarea { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; }
+        input:focus { border-color: #0046ad; }
+
+        .btn { padding: 12px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; transition: 0.2s; }
+        .btn-add { background: #333; color: white; padding: 10px 20px; }
+        .btn-add:hover { background: #000; }
+        .btn-gen { background: #0046ad; color: white; width: 100%; margin-top: 15px; font-size: 16px; }
+        .btn-save { background: #28a745; color: white; width: 794px; margin-top: 15px; font-size: 16px; }
+        
+        #basketList { width: 100%; font-size: 13px; margin-top: 15px; border-collapse: collapse; }
+        #basketList th { text-align: left; border-bottom: 2px solid #ddd; padding: 10px; }
+        #basketList td { padding: 10px; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
 
-    <div class="header-controls">
-        <button class="btn-action" id="stockBtn" onclick="toggleStock()">Stock View</button>
-        <button class="btn-action btn-deselect" id="deselectBtn" onclick="deselectAll()">Clear Selection</button>
-        <button class="btn-action" onclick="showAdmin()">+ Admin</button>
+<div class="setup-card">
+    <h2 style="margin-top:0; color:#0046ad; text-align:center;">INVOICE GENERATOR</h2>
+    
+    <div class="form-row">
+        <div class="form-group"><label>Pharmacy Name</label><input type="text" id="pName" value="RestEasy Pharma"></div>
+        <div class="form-group"><label>Watermark Image</label><input type="file" id="wmInput" accept="image/*" onchange="loadWatermark(event)"></div>
     </div>
 
-    <div id="adminPanel" style="display:none; background:var(--card); width:100%; max-width:600px; padding:20px; border-radius:20px; margin-bottom:20px; border:1px solid var(--primary);">
-        <h3 style="margin-top:0">New Medicine Entry</h3>
-        <input type="text" id="newName" placeholder="Brand Name" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:none; background:#030712; color:white;">
-        <input type="text" id="newGen" placeholder="Generic" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:none; background:#030712; color:white;">
-        <div style="display:flex; gap:10px; margin-bottom:10px;">
-            <input type="number" id="newPrice" placeholder="Price" style="flex:1; padding:12px; border-radius:10px; border:none; background:#030712; color:white;">
-            <input type="number" id="newMin" placeholder="Min Qty" style="flex:1; padding:12px; border-radius:10px; border:none; background:#030712; color:white;">
+    <div class="form-row">
+        <div class="form-group"><label>Order ID</label><input type="text" id="inOrderID"></div>
+        <div class="form-group"><label>Tracking Number</label><input type="text" id="inTrack" placeholder="e.g. GB12345678RM"></div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group" style="flex:1.5;">
+            <label>Customer Name</label>
+            <input type="text" id="inCust" placeholder="Enter name..." oninput="checkNameEmpty()" onblur="searchCustomer()">
+        </div>
+        <div class="form-group">
+            <label>Delivery Method</label>
+            <select id="inShipCost">
+                <option value="10">Next Day Delivery (£10.00)</option>
+                <option value="15">Special Delivery (£15.00)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:20px;">
+        <label>Shipping Address</label>
+        <textarea id="inAddr" rows="3" placeholder="Flat/House No, Street, City, Postcode"></textarea>
+    </div>
+
+    <div style="background:#f8f9fa; padding:15px; border-radius:10px; border:1px solid #dee2e6;">
+        <div class="form-row">
+            <div class="form-group" style="flex:2.5;">
+                <label>Select Medicine (Brand + Generic)</label>
+                <select id="inMed" onchange="autoFillPrice()">
+                    <option value="">-- Loading Medicines... --</option>
+                </select>
+            </div>
+            <div class="form-group" style="flex:0.8;">
+                <label>Price (£)</label>
+                <input type="number" id="unitPrice" step="0.01" readonly style="background:#e9ecef;">
+            </div>
+            <div class="form-group" style="flex:0.6;">
+                <label>Qty</label>
+                <input type="number" id="inQty" value="1" min="1">
+            </div>
+            <button onclick="addToBasket()" class="btn btn-add">ADD</button>
         </div>
         
-        <label style="font-size: 0.8rem; color: var(--secondary); margin-left: 5px;">Select Category:</label>
-        <select id="newCat">
-            <option value="Anxiety & Benzodiazepines">Anxiety & Benzodiazepines</option>
-            <option value="Pain Relief">Pain Relief</option>
-            <option value="Sleep & Stimulants">Sleep & Stimulants</option>
-        </select>
-
-        <button onclick="saveData()" style="width:100%; padding:15px; background:var(--primary); border:none; border-radius:12px; font-weight:800; color:white;">SAVE TO SHEET 2</button>
-        <button onclick="closeAdmin()" style="width:100%; margin-top:10px; background:transparent; color:var(--secondary); border:none;">Cancel</button>
+        <table id="basketList">
+            <thead><tr><th>Item Description</th><th>Qty</th><th>Price</th><th>Action</th></tr></thead>
+            <tbody id="basketBody"></tbody>
+        </table>
     </div>
 
-    <div class="search-container">
-        <input type="text" id="searchBar" placeholder="Search medicine..." oninput="render()">
-    </div>
+    <button class="btn btn-gen" onclick="renderInvoice()">GENERATE FULL INVOICE</button>
+</div>
 
-    <div id="loading" class="loader">LOADING DATA...</div>
-    <div class="med-list" id="listContainer"></div>
+<div id="invoice">
+    <img id="watermark-display" src="">
+    <div class="invoice-content">
+        <div class="header-section">
+            <div class="brand">
+                <h1 id="rPharmName">PHARMA</h1>
+                <p style="font-size:12px; margin-top:5px;">UK Online Medical Supplier – Secure Processing & Discreet Shipping<br>Customer Support: +44 7453 383721 </p>
+            </div>
+            <div class="invoice-meta">
+                <h2 style="margin:0; color:#000;">OFFICIAL INVOICE</h2>
+                <p>Order ID: <strong id="rOrderID"></strong></p>
+                <p>Date: <span id="rDate"></span></p>
+                <p>Status: <span style="color:green; font-weight:bold;">PAID</span></p>
+            </div>
+        </div>
 
-    <div id="modalOverlay" class="modal-overlay" onclick="closeModal()">
-        <div class="modal-card" onclick="event.stopPropagation()">
-            <h2 id="modalBrand" style="margin:0; color:var(--primary);"></h2>
-            <p id="modalGen" style="color:var(--secondary);"></p>
-            <p id="modalInfo" style="font-size:0.9rem; opacity:0.8;"></p>
-            <div class="total-box">Pack Total: <span id="modalTotal"></span></div>
+        <div class="details-grid">
+            <div class="details-box">
+                <h4>Shipping To</h4>
+                <p><strong id="rCust" style="font-size:17px; color:#000;"></strong><br>
+                <span id="rAddr" style="white-space:pre-wrap; line-height:1.8;"></span><br>
+                <strong>United Kingdom</strong></p>
+            </div>
+            <div class="details-box">
+                <h4>Shipping Information</h4>
+                <p><strong>Tracking:</strong> <span id="rTrack"></span><br>
+                <strong>Carrier:</strong> <span id="rCarrier">Royal Mail</span><br>
+                <strong>Packaging:</strong> Discreet/Plain Packaging</p>
+            </div>
+        </div>
+
+        <table class="table-style">
+            <thead><tr><th>Item Description</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Unit Price</th><th style="text-align:right;">Total</th></tr></thead>
+            <tbody id="rTableBody"></tbody>
+        </table>
+
+        <div class="summary-wrapper">
+            <div class="payment-info">
+                <strong>Payment Method: Bank Transfer</strong><br>
+                Transaction Status: <span style="color:green; font-weight:bold;">CLEARED</span><br>
+                Payment Reference: <span id="rRef"></span>
+            </div>
+            <div class="summary-box">
+                <div style="display:flex; justify-content:space-between;"><span>Subtotal:</span><span id="rSub"></span></div>
+                <div style="display:flex; justify-content:space-between;"><span>Shipping & Handling:</span><span id="rShipDisp"></span></div>
+                <div style="display:flex; justify-content:space-between;" class="grand-total"><span>Grand Total:</span><span id="rTotal"></span></div>
+            </div>
+        </div>
+
+        <div style="margin-top:60px; border: 1.5px dashed #bbb; padding: 15px; text-align: center; font-size: 13px; border-radius: 8px; color:#555;">
+            This parcel is shipped as <strong>Private Health Supplies</strong>. <br>Please allow up to 24 hours for the tracking number to update on the carrier's website.
         </div>
     </div>
+</div>
 
-    <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-Z3EkbWUn2-Lb68dn_9C-xqYqwYcrRpAGgEtWJ0m5L94-5jCV5oHst_UCSS3j1w_Law/exec'; 
+<button id="saveBtn" class="btn btn-save" style="display:none;" onclick="downloadImage()">DOWNLOAD INVOICE AS PNG</button>
 
-        let allMeds = [];
-        let isStockSelecting = false;
-        let selectedItems = JSON.parse(localStorage.getItem('my_stock_list')) || [];
+<script>
+const scriptURL = 'https://script.google.com/macros/s/AKfycbw-Z3EkbWUn2-Lb68dn_9C-xqYqwYcrRpAGgEtWJ0m5L94-5jCV5oHst_UCSS3j1w_Law/exec';
 
-        async function loadData() {
-            try {
-                const res = await fetch(SCRIPT_URL + "?action=getData");
-                const data = await res.json();
-                if(data.medicines) {
-                    allMeds = data.medicines.map(m => ({
-                        name: m.name, gen: m.generic, price: m.price, min: m.minQty, cat: m.category || "General"
-                    }));
-                    render();
-                    document.getElementById('loading').style.display = 'none';
-                }
-            } catch (e) { 
-                document.getElementById('loading').innerText = "FAILED TO LOAD";
-            }
-        }
+let basket = [];
+let allMeds = [];
 
-        function render() {
-            const container = document.getElementById('listContainer');
-            const query = document.getElementById('searchBar').value.toLowerCase();
-            
-            let list = isStockSelecting ? allMeds : (selectedItems.length > 0 ? allMeds.filter(m => selectedItems.includes(m.name)) : allMeds);
-            if(query) list = list.filter(m => m.name.toLowerCase().includes(query) || m.gen.toLowerCase().includes(query));
+window.onload = async () => {
+    document.getElementById('inOrderID').value = "RE-" + Math.floor(100000 + Math.random() * 900000);
+    try {
+        const response = await fetch(scriptURL + "?action=getData");
+        const data = await response.json();
+        allMeds = data.medicines; 
+        
+        const select = document.getElementById('inMed');
+        select.innerHTML = '<option value="">-- Select Medicine --</option>';
+        allMeds.forEach(m => {
+            let opt = document.createElement('option');
+            opt.value = m.name;
+            opt.innerText = `${m.name} (${m.generic})`; 
+            select.appendChild(opt);
+        });
+    } catch (e) { alert("Sheet2 connection failed!"); }
+}
 
-            // ক্যাটাগরিগুলো অটো সাজানো (Fixed 3 names order maintained)
-            const targetOrder = ["Anxiety & Benzodiazepines", "Pain Relief", "Sleep & Stimulants"];
-            const foundCategories = [...new Set(list.map(m => m.cat))];
-            
-            // শিটে নতুন কিছু থাকলেও সেটা শেষে যোগ হবে
-            const categories = targetOrder.filter(c => foundCategories.includes(c)).concat(foundCategories.filter(c => !targetOrder.includes(c)));
+function checkNameEmpty() {
+    if(document.getElementById('inCust').value.trim() === "") {
+        document.getElementById('inAddr').value = "";
+    }
+}
 
-            let html = "";
-            categories.forEach(cat => {
-                html += `<div class="category-group"><h3 class="category-title">${cat}</h3>`;
-                list.filter(m => m.cat === cat).forEach(m => {
-                    const isChecked = selectedItems.includes(m.name) ? 'checked' : '';
-                    html += `
-                    <div class="med-item" onclick="showDetails('${m.name}', '${m.gen}', ${m.price}, ${m.min})">
-                        <input type="checkbox" class="stock-checkbox" ${isChecked} onclick="event.stopPropagation()" onchange="handleSelect(event, '${m.name}')">
-                        <div class="med-content">
-                            <span class="med-name">${m.name}</span>
-                            <span class="generic-name">${m.gen}</span>
-                        </div>
-                        <div class="price">£${m.price.toFixed(2)}</div>
-                    </div>`;
-                });
-                html += `</div>`;
-            });
-            container.innerHTML = html || "<p style='text-align:center; opacity:0.5;'>No Medicine Found</p>";
-        }
+function autoFillPrice() {
+    const med = allMeds.find(m => m.name === document.getElementById('inMed').value);
+    if(med) {
+        document.getElementById('unitPrice').value = med.price;
+        document.getElementById('inQty').value = med.minQty || 1;
+    }
+}
 
-        async function saveData() {
-            const btn = event.target;
-            btn.innerText = "SAVING...";
-            const data = {
-                name: document.getElementById('newName').value,
-                gen: document.getElementById('newGen').value,
-                price: document.getElementById('newPrice').value,
-                min: document.getElementById('newMin').value,
-                cat: document.getElementById('newCat').value
-            };
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-            alert("Saved to Sheet 2!");
-            location.reload();
-        }
+function addToBasket() {
+    const medName = document.getElementById('inMed').value;
+    const medObj = allMeds.find(m => m.name === medName);
+    const price = parseFloat(document.getElementById('unitPrice').value);
+    const qty = parseInt(document.getElementById('inQty').value);
 
-        function toggleStock() {
-            if (prompt("Pass:") === "68") {
-                isStockSelecting = !isStockSelecting;
-                document.body.classList.toggle('stock-mode-active', isStockSelecting);
-                document.getElementById('stockBtn').innerText = isStockSelecting ? "Save List" : "Stock View";
-                render();
-            }
-        }
+    if(!medName || isNaN(price)) return alert("Select medicine first!");
 
-        function handleSelect(e, name) {
-            if(e.target.checked) { if(!selectedItems.includes(name)) selectedItems.push(name); }
-            else { selectedItems = selectedItems.filter(i => i !== name); }
-            localStorage.setItem('my_stock_list', JSON.stringify(selectedItems));
-        }
+    const fullName = `${medObj.name} (${medObj.generic})`;
+    const existing = basket.find(i => i.name === fullName);
+    if(existing) { existing.qty += qty; } 
+    else { basket.push({ name: fullName, price: price, qty: qty }); }
+    
+    updateBasketUI();
+}
 
-        function deselectAll() {
-            if(confirm("Clear selection?")) { selectedItems = []; localStorage.removeItem('my_stock_list'); render(); }
-        }
+function updateBasketUI() {
+    const tbody = document.getElementById('basketBody');
+    tbody.innerHTML = "";
+    basket.forEach((item, index) => {
+        tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.qty}</td><td>£${item.price.toFixed(2)}</td><td><button onclick="removeFromBasket(${index})" style="color:red; border:none; background:none; cursor:pointer;">✖</button></td></tr>`;
+    });
+}
 
-        function showDetails(n, g, p, m) {
-            if(isStockSelecting) return;
-            document.getElementById('modalBrand').innerText = n;
-            document.getElementById('modalGen').innerText = g;
-            document.getElementById('modalInfo').innerText = `Price: £${p.toFixed(2)} | Min Qty: ${m}`;
-            document.getElementById('modalTotal').innerText = `£${(p*m).toFixed(2)}`;
-            document.getElementById('modalOverlay').style.display = 'flex';
-        }
+function removeFromBasket(index) {
+    basket.splice(index, 1);
+    updateBasketUI();
+}
 
-        function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
-        function showAdmin() { if (prompt("Pass:") === "68") document.getElementById('adminPanel').style.display = "block"; }
-        function closeAdmin() { document.getElementById('adminPanel').style.display = "none"; }
+function renderInvoice() {
+    if(basket.length === 0) return alert("Basket is empty!");
+    
+    document.getElementById('rPharmName').innerText = document.getElementById('pName').value;
+    document.getElementById('rOrderID').innerText = document.getElementById('inOrderID').value;
+    document.getElementById('rRef').innerText = document.getElementById('inOrderID').value;
+    document.getElementById('rDate').innerText = new Date().toLocaleDateString('en-GB');
+    document.getElementById('rCust').innerText = document.getElementById('inCust').value || "Customer";
+    document.getElementById('rAddr').innerText = document.getElementById('inAddr').value;
+    document.getElementById('rTrack').innerText = document.getElementById('inTrack').value || "Processing";
 
-        loadData();
-    </script>
+    const ship = parseFloat(document.getElementById('inShipCost').value);
+    document.getElementById('rCarrier').innerText = (ship === 15) ? "Special Delivery Guaranteed" : "Royal Mail";
+    document.getElementById('rShipDisp').innerText = "£" + ship.toFixed(2);
+
+    let sub = 0; let rows = "";
+    basket.forEach(item => {
+        let total = item.price * item.qty;
+        sub += total;
+        rows += `<tr><td>${item.name}</td><td style="text-align:center;">${item.qty}</td><td style="text-align:right;">£${item.price.toFixed(2)}</td><td style="text-align:right;">£${total.toFixed(2)}</td></tr>`;
+    });
+
+    document.getElementById('rTableBody').innerHTML = rows;
+    document.getElementById('rSub').innerText = "£" + sub.toFixed(2);
+    document.getElementById('rTotal').innerText = "£" + (sub + ship).toFixed(2);
+    
+    document.getElementById('invoice').style.display = 'block';
+    document.getElementById('saveBtn').style.display = 'block';
+}
+
+function loadWatermark(event) {
+    const reader = new FileReader();
+    reader.onload = () => {
+        const wm = document.getElementById('watermark-display');
+        wm.src = reader.result;
+        wm.style.display = 'block';
+    }
+    reader.readAsDataURL(event.target.files[0]);
+}
+
+function searchCustomer() {
+    const name = document.getElementById('inCust').value;
+    if(!name) return;
+    fetch(scriptURL + '?name=' + encodeURIComponent(name))
+    .then(r => r.json())
+    .then(d => { if(d.address) document.getElementById('inAddr').value = d.address; });
+}
+
+function downloadImage() {
+    const medDetails = basket.map(i => `${i.name} x${i.qty}`).join(" | ");
+    const data = {
+        orderID: document.getElementById('rOrderID').innerText,
+        name: document.getElementById('rCust').innerText,
+        address: document.getElementById('rAddr').innerText,
+        medicines: medDetails,
+        total: document.getElementById('rTotal').innerText
+    };
+    fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+
+    html2canvas(document.getElementById('invoice'), { scale: 2 }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Invoice_${data.orderID}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+    });
+}
+</script>
 </body>
 </html>
