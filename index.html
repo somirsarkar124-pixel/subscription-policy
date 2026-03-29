@@ -52,8 +52,6 @@
             </div>
             <div class="stock-scroll-list" id="adminStockList"></div>
         </div>
-        <label style="font-size: 12px; color: var(--secondary);">Order Telegram Link:</label>
-        <input type="text" id="tgLink" placeholder="https://t.me/resteasypharma">
         <hr style="opacity:0.1; margin: 15px 0;">
         <input type="text" id="newName" placeholder="Brand Name">
         <input type="text" id="newGen" placeholder="Generic Name">
@@ -95,22 +93,44 @@
     </div>
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_D4oFHEzVljjtlppgwRC2C_ZoPzran4GZMAVeMqp67XM8UTFEoreMvkRBxdMye_9D2g/exec'; 
+        const TG_LINK = 'https://t.me/resteasypharma'; // পারমানেন্ট টেলিগ্রাম লিঙ্ক
         let allMeds = []; let stockMode = localStorage.getItem('stockMode') === 'true'; let selectedStock = JSON.parse(localStorage.getItem('selectedStock')) || []; let currentViewMed = null; let stripCount = 1;
+
         async function loadData() { try { const res = await fetch(SCRIPT_URL + "?action=getData"); const data = await res.json(); if(data.medicines) { allMeds = data.medicines.map(m => ({ name: m.name, gen: m.generic, price: parseFloat(m.price), min: parseInt(m.minQty), cat: m.category || "General", img: m.image || "" })); render(); } } catch (e) { console.log("Load failed"); } }
+        
         function render() { const container = document.getElementById('listContainer'); const banner = document.getElementById('stockBanner'); const query = document.getElementById('searchBar').value.toLowerCase(); banner.style.display = stockMode ? "block" : "none"; let list = stockMode ? allMeds.filter(m => selectedStock.includes(m.name)) : allMeds; if(query) list = list.filter(m => m.name.toLowerCase().includes(query) || m.gen.toLowerCase().includes(query)); let html = ""; const categories = [...new Set(list.map(m => m.cat))]; categories.forEach(cat => { html += `<h3 style="font-size:0.75rem; color:var(--primary); text-transform:uppercase; margin: 25px 0 12px 5px;">${cat}</h3>`; list.filter(m => m.cat === cat).forEach(m => { html += `<div class="med-item" onclick="showDetails('${m.name}')"><img src="${m.img || 'https://via.placeholder.com/100'}" class="med-img"><div class="med-content"><span class="med-name">${m.name}</span><span class="generic-name">${m.gen}</span></div><div style="text-align:right;"><div class="price-tag">£${(m.price * m.min).toFixed(2)}</div><div style="font-size:10px; opacity:0.6;">per strip</div></div></div>`; }); }); container.innerHTML = html || `<p style='text-align:center; opacity:0.3; margin-top:50px;'>No Items Found</p>`; }
+        
         function renderAdminStock() { const listDiv = document.getElementById('adminStockList'); listDiv.innerHTML = allMeds.map((m, i) => `<div class="stock-item-row"><label style="display:flex; align-items:center; gap:10px; flex:1;"><input type="checkbox" ${selectedStock.includes(m.name)?'checked':''} onchange="toggleItem('${m.name}')"><span>${m.name}</span></label><span class="edit-badge" onclick="editMed(${i})">Edit</span></div>`).join(''); }
+        
         function toggleItem(name) { if(selectedStock.includes(name)) selectedStock = selectedStock.filter(n => n !== name); else selectedStock.push(name); localStorage.setItem('selectedStock', JSON.stringify(selectedStock)); render(); }
+        
         function toggleStockMode() { stockMode = !stockMode; localStorage.setItem('stockMode', stockMode); updateAdminBtnUI(); render(); }
+        
         function updateAdminBtnUI() { const btn = document.getElementById('stockToggleBtn'); btn.innerText = stockMode ? "ON" : "OFF"; btn.style.background = stockMode ? "var(--success)" : "#374151"; }
+        
         function showDetails(name) { currentViewMed = allMeds.find(i => i.name === name); stripCount = 1; updateCalc(); document.getElementById('modalOverlay').style.display = 'flex'; }
+        
         function updateQty(val) { stripCount += val; if(stripCount < 1) stripCount = 1; updateCalc(); }
+        
         function updateCalc() { const totalTabs = currentViewMed.min * stripCount; const grandTotal = totalTabs * currentViewMed.price; document.getElementById('modalImg').src = currentViewMed.img || 'https://via.placeholder.com/100'; document.getElementById('modalBrand').innerText = currentViewMed.name; document.getElementById('modalGen').innerText = currentViewMed.gen; document.getElementById('orderQtyLabel').innerText = stripCount + (stripCount > 1 ? " Strips" : " Strip"); document.getElementById('calcPerStrip').innerText = currentViewMed.min; document.getElementById('calcTotalTabs').innerText = totalTabs; document.getElementById('calcPricePerTab').innerText = "£" + currentViewMed.price.toFixed(2); document.getElementById('calcGrandTotal').innerText = "£" + grandTotal.toFixed(2); }
-        function orderNow() { const link = localStorage.getItem('https://t.me/resteasypharma'); if(!link) return alert("Set TG Link!"); const totalTabs = currentViewMed.min * stripCount; const grandTotal = (totalTabs * currentViewMed.price).toFixed(2); const msg = `⚡ *Order Request*:\n💊 *Medicine:* ${currentViewMed.name}\n📦 *Quantity:* ${stripCount} Strip(s)\n🔢 *Tabs:* ${totalTabs}\n💎 *Total:* £${grandTotal}`; window.open(`${link}?text=${encodeURIComponent(msg)}`, '_blank'); }
-        async function saveMed() { const data = { name: document.getElementById('newName').value, gen: document.getElementById('newGen').value, image: document.getElementById('newImg').value, price: document.getElementById('newPrice').value, min: document.getElementById('newMin').value, cat: document.getElementById('newCat').value }; localStorage.setItem('globalTgLink', document.getElementById('tgLink').value); await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) }); alert("Saved!"); location.reload(); }
+        
+        function orderNow() { 
+            const totalTabs = currentViewMed.min * stripCount; 
+            const grandTotal = (totalTabs * currentViewMed.price).toFixed(2); 
+            const msg = `⚡ *Order Request*:\n💊 *Medicine:* ${currentViewMed.name}\n📦 *Quantity:* ${stripCount} Strip(s)\n🔢 *Tabs:* ${totalTabs}\n💎 *Total:* £${grandTotal}`; 
+            window.open(`${TG_LINK}?text=${encodeURIComponent(msg)}`, '_blank'); 
+        }
+
+        async function saveMed() { const data = { name: document.getElementById('newName').value, gen: document.getElementById('newGen').value, image: document.getElementById('newImg').value, price: document.getElementById('newPrice').value, min: document.getElementById('newMin').value, cat: document.getElementById('newCat').value }; await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) }); alert("Saved!"); location.reload(); }
+        
         function editMed(i) { const m = allMeds[i]; document.getElementById('newName').value = m.name; document.getElementById('newGen').value = m.gen; document.getElementById('newImg').value = m.img; document.getElementById('newPrice').value = m.price; document.getElementById('newMin').value = m.min; document.getElementById('newCat').value = m.cat; }
+        
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
-        function showAdmin() { if (prompt("Pass:") === "68") { document.getElementById('adminPanel').style.display = "block"; document.getElementById('tgLink').value = localStorage.getItem('globalTgLink') || ""; updateAdminBtnUI(); renderAdminStock(); } }
+        
+        function showAdmin() { if (prompt("Pass:") === "68") { document.getElementById('adminPanel').style.display = "block"; updateAdminBtnUI(); renderAdminStock(); } }
+        
         function closeAdmin() { document.getElementById('adminPanel').style.display = "none"; }
+        
         loadData();
     </script>
 </body>
