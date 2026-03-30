@@ -10,18 +10,24 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; padding: 15px; display: flex; flex-direction: column; align-items: center; margin: 0; background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #030712 100%); min-height: 100vh; }
         
-        /* New Logo Section Style */
+        /* Brand Header */
         .brand-header { text-align: center; padding: 40px 0 20px 0; cursor: pointer; user-select: none; width: 100%; }
         .logo-box { width: 80px; height: 80px; background: linear-gradient(135deg, #3b82f6, #0ea5e9); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 30px rgba(14, 165, 233, 0.4); }
         .logo-box span { font-size: 45px; font-weight: 800; color: white; }
         .brand-name { font-size: 32px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
         .brand-tagline { font-size: 14px; color: var(--secondary); letter-spacing: 2px; margin-top: 5px; text-transform: uppercase; }
 
+        /* Custom Login Modal */
+        .login-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(10px); }
+        .login-card { background: var(--card); padding: 30px; border-radius: 25px; border: 1px solid var(--primary); width: 90%; max-width: 320px; text-align: center; box-shadow: 0 0 40px rgba(14, 165, 233, 0.2); }
+        .login-card h2 { margin: 0 0 20px; font-size: 1.2rem; color: #fff; }
+        .login-card input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #1f2937; background: #030712; color: white; text-align: center; font-size: 1rem; margin-bottom: 12px; outline: none; }
+        .login-card input:focus { border-color: var(--primary); }
+        .login-btn { width: 100%; padding: 12px; background: var(--primary); border: none; border-radius: 12px; color: white; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .login-btn:active { transform: scale(0.96); }
+
         #stockBanner { display: none; width: 100%; max-width: 600px; background: linear-gradient(90deg, #0ea5e9 0%, #3b82f6 100%); color: white; padding: 18px; border-radius: 20px; text-align: center; font-weight: 800; margin-bottom: 20px; font-size: 1rem; animation: pulse 2s infinite; box-shadow: 0 10px 20px rgba(14, 165, 233, 0.3); }
         @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(0.98); } 100% { opacity: 1; transform: scale(1); } }
-        
-        /* Hidden Admin Button */
-        .btn-admin { display: none; }
         
         .admin-box { display:none; background:var(--card); width:100%; max-width:600px; padding:20px; border-radius:24px; margin-bottom:20px; border:1px solid var(--primary); }
         .admin-box input, .admin-box select { width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid #1f2937; background:#030712; color:white; }
@@ -55,10 +61,21 @@
     </style>
 </head>
 <body>
-    <div class="brand-header" ondblclick="showAdmin()">
+
+    <div class="brand-header" ondblclick="showLogin()">
         <div class="logo-box"><span>R</span></div>
         <h1 class="brand-name">RestEasy Pharma</h1>
         <div class="brand-tagline">— UK PHARMACY SLEEP CARE —</div>
+    </div>
+
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-card">
+            <h2>Admin Access</h2>
+            <input type="text" id="adminUser" placeholder="Enter Username">
+            <input type="password" id="adminPass" placeholder="Enter Password">
+            <button class="login-btn" onclick="checkAdmin()">Login</button>
+            <p onclick="closeLogin()" style="color:var(--secondary); font-size:12px; margin-top:15px; cursor:pointer;">Cancel</p>
+        </div>
     </div>
 
     <div id="stockBanner">STOCK AVAILABLE NOW – ORDER QUICKLY!</div>
@@ -174,12 +191,30 @@
             else { window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank'); }
         }
 
-        async function saveMed() { const data = { name: document.getElementById('newName').value, gen: document.getElementById('newGen').value, image: document.getElementById('newImg').value, price: document.getElementById('newPrice').value, min: document.getElementById('newMin').value, cat: document.getElementById('newCat').value }; await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) }); alert("Saved!"); location.reload(); }
+        async function saveMed() { const data = { name: document.getElementById('newName').value, gen: document.getElementById('newGen').value, image: document.getElementById('newImg').value, price: document.getElementById('newPrice').value, min: document.getElementById('newMin').value, cat: document.getElementById('newCat').value }; await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) }); alert("Data Saved Successfully!"); location.reload(); }
         function editMed(i) { const m = allMeds[i]; document.getElementById('newName').value = m.name; document.getElementById('newGen').value = m.gen; document.getElementById('newImg').value = m.img; document.getElementById('newPrice').value = m.price; document.getElementById('newMin').value = m.min; document.getElementById('newCat').value = m.cat; }
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
         
-        // Admin Open on Double Click
-        function showAdmin() { if (prompt("Pass:") === "68") { document.getElementById('adminPanel').style.display = "block"; updateAdminBtnUI(); renderAdminStock(); window.scrollTo(0,0); } }
+        /* Admin Login Logic */
+        function showLogin() { 
+            document.getElementById('loginOverlay').style.display = 'flex'; 
+            document.getElementById('adminUser').focus();
+        }
+        function closeLogin() { document.getElementById('loginOverlay').style.display = 'none'; }
+        function checkAdmin() {
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
+            // Admin Credential check
+            if(user === "Hasib" && pass === "68") {
+                closeLogin();
+                document.getElementById('adminPanel').style.display = "block";
+                updateAdminBtnUI();
+                renderAdminStock();
+                window.scrollTo(0,0);
+            } else {
+                alert("Invalid Username or Password!");
+            }
+        }
         function closeAdmin() { document.getElementById('adminPanel').style.display = "none"; }
         
         loadData();
