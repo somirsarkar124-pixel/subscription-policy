@@ -16,7 +16,6 @@
         .brand-name { font-size: 32px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
         .brand-tagline { font-size: 14px; color: var(--secondary); letter-spacing: 2px; margin-top: 5px; text-transform: uppercase; }
 
-        /* Admin Login Style (As per your Image) */
         .admin-login-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(10px); }
         .admin-login-card { background: #0b0f1a; width: 90%; max-width: 350px; padding: 30px; border-radius: 25px; border: 1px solid #1e293b; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .admin-login-card h2 { margin-bottom: 25px; font-weight: 800; font-size: 1.5rem; color: white; }
@@ -69,7 +68,7 @@
     <div id="loginOverlay" class="admin-login-overlay">
         <div class="admin-login-card">
             <h2>Admin Access</h2>
-            <input type="text" id="admUser" class="admin-input" placeholder="Username (Optional)">
+            <input type="text" id="admUser" class="admin-input" placeholder="Username">
             <input type="password" id="admPass" class="admin-input" placeholder="Enter Password">
             <button class="login-btn" onclick="checkLogin()">Login</button>
             <button class="cancel-btn" onclick="closeLogin()">Cancel</button>
@@ -83,7 +82,7 @@
         <div class="stock-manager-container">
             <div style="display:flex; justify-content: space-between; align-items:center;">
                 <span style="font-weight:700;">Stock Mode (User View)</span>
-                <button id="stockToggleBtn" onclick="toggleStockMode()" style="padding:5px 15px; border-radius:8px; border:none; font-weight:800; cursor:pointer;">OFF</button>
+                <button id="stockToggleBtn" onclick="toggleStockMode()" style="padding:5px 15px; border-radius:8px; border:none; font-weight:800; cursor:pointer; background:#374151; color:white;">OFF</button>
             </div>
             <div class="stock-scroll-list" id="adminStockList"></div>
         </div>
@@ -144,20 +143,16 @@
     </div>
 
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_D4oFHEzVljjtlppgwRC2C_ZoPzran4GZMAVeMqp67XM8UTFEoreMvkRBxdMye_9D2g/exec'; 
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHeykMpC2JbhEZ8yYjnlenEBTz2Hyr256gS7X-QMeHopjzIQBayRntqPCVXDsDokg/exec'; 
         const TG_LINK = 'https://t.me/resteasypharma';
         const WA_NUMBER = '447453383721';
         
-        let allMeds = []; let stockMode = localStorage.getItem('stockMode') === 'true'; let selectedStock = JSON.parse(localStorage.getItem('selectedStock')) || []; let currentViewMed = null; let stripCount = 1;
+        let allMeds = []; 
+        let stockMode = false; 
+        let currentViewMed = null; 
+        let stripCount = 1;
 
-        // দ্রুত লোড করার জন্য ক্যাশিং ফাংশন
         async function loadData() { 
-            const cachedData = localStorage.getItem('medsCache');
-            if(cachedData) {
-                allMeds = JSON.parse(cachedData);
-                render();
-            }
-
             try { 
                 const res = await fetch(SCRIPT_URL + "?action=getData"); 
                 const data = await res.json(); 
@@ -167,9 +162,9 @@
                         price: parseFloat(m.price), 
                         min: parseInt(m.minQty), 
                         cat: m.category || "General", 
-                        img: m.image || "" 
+                        img: m.image || "",
+                        isAvailable: m.isAvailable === true || m.isAvailable === "TRUE"
                     })); 
-                    localStorage.setItem('medsCache', JSON.stringify(allMeds));
                     render(); 
                 } 
             } catch (e) { console.log("Fetch Error"); } 
@@ -179,8 +174,10 @@
             const container = document.getElementById('listContainer'); 
             const banner = document.getElementById('stockBanner'); 
             const query = document.getElementById('searchBar').value.toLowerCase(); 
+            
             banner.style.display = stockMode ? "block" : "none"; 
-            let list = stockMode ? allMeds.filter(m => selectedStock.includes(m.name)) : allMeds; 
+            let list = stockMode ? allMeds.filter(m => m.isAvailable) : allMeds; 
+            
             if(query) list = list.filter(m => m.name.toLowerCase().includes(query) || m.gen.toLowerCase().includes(query)); 
             
             let html = ""; 
@@ -194,7 +191,6 @@
             container.innerHTML = html || `<p style='text-align:center; opacity:0.3; margin-top:50px;'>No Items Found</p>`; 
         }
         
-        // Login System
         function openLogin() { document.getElementById('loginOverlay').style.display = 'flex'; }
         function closeLogin() { document.getElementById('loginOverlay').style.display = 'none'; }
         
@@ -205,15 +201,48 @@
                 closeLogin();
                 document.getElementById('adminPanel').style.display = "block"; 
                 updateAdminBtnUI(); renderAdminStock(); window.scrollTo(0,0);
-            } else {
-                alert("Incorrect Login Details!");
-            }
+            } else { alert("Incorrect Login Details!"); }
         }
 
-        function renderAdminStock() { const listDiv = document.getElementById('adminStockList'); listDiv.innerHTML = allMeds.map((m, i) => `<div class="stock-item-row"><label style="display:flex; align-items:center; gap:10px; flex:1;"><input type="checkbox" ${selectedStock.includes(m.name)?'checked':''} onchange="toggleItem('${m.name}')"><span>${m.name}</span></label><span class="edit-badge" onclick="editMed(${i})">Edit</span></div>`).join(''); }
-        function toggleItem(name) { if(selectedStock.includes(name)) selectedStock = selectedStock.filter(n => n !== name); else selectedStock.push(name); localStorage.setItem('selectedStock', JSON.stringify(selectedStock)); render(); }
-        function toggleStockMode() { stockMode = !stockMode; localStorage.setItem('stockMode', stockMode); updateAdminBtnUI(); render(); }
-        function updateAdminBtnUI() { const btn = document.getElementById('stockToggleBtn'); btn.innerText = stockMode ? "ON" : "OFF"; btn.style.background = stockMode ? "var(--success)" : "#374151"; }
+        function renderAdminStock() { 
+            const listDiv = document.getElementById('adminStockList'); 
+            listDiv.innerHTML = allMeds.map((m, i) => `
+                <div class="stock-item-row">
+                    <label style="display:flex; align-items:center; gap:10px; flex:1;">
+                        <input type="checkbox" ${m.isAvailable ? 'checked' : ''} onchange="toggleItem('${m.name}')">
+                        <span>${m.name}</span>
+                    </label>
+                    <span class="edit-badge" onclick="editMed(${i})">Edit</span>
+                </div>`).join(''); 
+        }
+
+        async function toggleItem(name) { 
+            const med = allMeds.find(m => m.name === name);
+            med.isAvailable = !med.isAvailable;
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({
+                    action: "updateStockStatus",
+                    medName: name,
+                    status: med.isAvailable
+                })
+            });
+            render(); 
+        }
+
+        function toggleStockMode() { 
+            stockMode = !stockMode; 
+            updateAdminBtnUI(); 
+            render(); 
+        }
+
+        function updateAdminBtnUI() { 
+            const btn = document.getElementById('stockToggleBtn'); 
+            btn.innerText = stockMode ? "ON" : "OFF"; 
+            btn.style.background = stockMode ? "var(--success)" : "#374151"; 
+        }
+
         function showDetails(name) { currentViewMed = allMeds.find(i => i.name === name); stripCount = 1; updateCalc(); document.getElementById('modalOverlay').style.display = 'flex'; }
         function updateQty(val) { stripCount += val; if(stripCount < 1) stripCount = 1; updateCalc(); }
         
@@ -244,8 +273,31 @@
             else { window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank'); }
         }
 
-        async function saveMed() { const data = { name: document.getElementById('newName').value, gen: document.getElementById('newGen').value, image: document.getElementById('newImg').value, price: document.getElementById('newPrice').value, min: document.getElementById('newMin').value, cat: document.getElementById('newCat').value }; await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) }); localStorage.removeItem('medsCache'); alert("Saved!"); location.reload(); }
-        function editMed(i) { const m = allMeds[i]; document.getElementById('newName').value = m.name; document.getElementById('newGen').value = m.gen; document.getElementById('newImg').value = m.img; document.getElementById('newPrice').value = m.price; document.getElementById('newMin').value = m.min; document.getElementById('newCat').value = m.cat; }
+        async function saveMed() { 
+            const data = { 
+                action: "save",
+                name: document.getElementById('newName').value, 
+                gen: document.getElementById('newGen').value, 
+                image: document.getElementById('newImg').value, 
+                price: document.getElementById('newPrice').value, 
+                min: document.getElementById('newMin').value, 
+                cat: document.getElementById('newCat').value 
+            }; 
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) }); 
+            alert("Saved!"); 
+            location.reload(); 
+        }
+
+        function editMed(i) { 
+            const m = allMeds[i]; 
+            document.getElementById('newName').value = m.name; 
+            document.getElementById('newGen').value = m.gen; 
+            document.getElementById('newImg').value = m.img; 
+            document.getElementById('newPrice').value = m.price; 
+            document.getElementById('newMin').value = m.min; 
+            document.getElementById('newCat').value = m.cat; 
+        }
+
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
         function closeAdmin() { document.getElementById('adminPanel').style.display = "none"; }
         
