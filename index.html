@@ -10,21 +10,20 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; padding: 15px; display: flex; flex-direction: column; align-items: center; margin: 0; background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #030712 100%); min-height: 100vh; }
         
-        /* Brand Header */
         .brand-header { text-align: center; padding: 40px 0 20px 0; cursor: pointer; user-select: none; width: 100%; }
         .logo-box { width: 80px; height: 80px; background: linear-gradient(135deg, #3b82f6, #0ea5e9); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 0 30px rgba(14, 165, 233, 0.4); }
         .logo-box span { font-size: 45px; font-weight: 800; color: white; }
         .brand-name { font-size: 32px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
         .brand-tagline { font-size: 14px; color: var(--secondary); letter-spacing: 2px; margin-top: 5px; text-transform: uppercase; }
 
-        /* Custom Login Modal */
-        .login-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(10px); }
-        .login-card { background: var(--card); padding: 30px; border-radius: 25px; border: 1px solid var(--primary); width: 90%; max-width: 320px; text-align: center; box-shadow: 0 0 40px rgba(14, 165, 233, 0.2); }
-        .login-card h2 { margin: 0 0 20px; font-size: 1.2rem; color: #fff; }
-        .login-card input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #1f2937; background: #030712; color: white; text-align: center; font-size: 1rem; margin-bottom: 12px; outline: none; }
-        .login-card input:focus { border-color: var(--primary); }
-        .login-btn { width: 100%; padding: 12px; background: var(--primary); border: none; border-radius: 12px; color: white; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        .login-btn:active { transform: scale(0.96); }
+        /* Admin Login Style (As per your Image) */
+        .admin-login-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(10px); }
+        .admin-login-card { background: #0b0f1a; width: 90%; max-width: 350px; padding: 30px; border-radius: 25px; border: 1px solid #1e293b; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .admin-login-card h2 { margin-bottom: 25px; font-weight: 800; font-size: 1.5rem; color: white; }
+        .admin-input { width: 100%; background: #030712; border: 1px solid #1e293b; padding: 15px; border-radius: 12px; color: white; margin-bottom: 12px; outline: none; font-size: 16px; }
+        .admin-input:focus { border-color: var(--primary); }
+        .login-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; margin-top: 10px; }
+        .cancel-btn { background: transparent; color: var(--secondary); border: none; margin-top: 15px; cursor: pointer; font-weight: 600; }
 
         #stockBanner { display: none; width: 100%; max-width: 600px; background: linear-gradient(90deg, #0ea5e9 0%, #3b82f6 100%); color: white; padding: 18px; border-radius: 20px; text-align: center; font-weight: 800; margin-bottom: 20px; font-size: 1rem; animation: pulse 2s infinite; box-shadow: 0 10px 20px rgba(14, 165, 233, 0.3); }
         @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(0.98); } 100% { opacity: 1; transform: scale(1); } }
@@ -61,20 +60,19 @@
     </style>
 </head>
 <body>
-
-    <div class="brand-header" ondblclick="showLogin()">
+    <div class="brand-header" ondblclick="openLogin()">
         <div class="logo-box"><span>R</span></div>
         <h1 class="brand-name">RestEasy Pharma</h1>
         <div class="brand-tagline">— UK PHARMACY SLEEP CARE —</div>
     </div>
 
-    <div id="loginOverlay" class="login-overlay">
-        <div class="login-card">
+    <div id="loginOverlay" class="admin-login-overlay">
+        <div class="admin-login-card">
             <h2>Admin Access</h2>
-            <input type="text" id="adminUser" placeholder="Enter Username">
-            <input type="password" id="adminPass" placeholder="Enter Password">
-            <button class="login-btn" onclick="checkAdmin()">Login</button>
-            <p onclick="closeLogin()" style="color:var(--secondary); font-size:12px; margin-top:15px; cursor:pointer;">Cancel</p>
+            <input type="text" id="admUser" class="admin-input" placeholder="Username (Optional)">
+            <input type="password" id="admPass" class="admin-input" placeholder="Enter Password">
+            <button class="login-btn" onclick="checkLogin()">Login</button>
+            <button class="cancel-btn" onclick="closeLogin()">Cancel</button>
         </div>
     </div>
 
@@ -152,10 +150,66 @@
         
         let allMeds = []; let stockMode = localStorage.getItem('stockMode') === 'true'; let selectedStock = JSON.parse(localStorage.getItem('selectedStock')) || []; let currentViewMed = null; let stripCount = 1;
 
-        async function loadData() { try { const res = await fetch(SCRIPT_URL + "?action=getData"); const data = await res.json(); if(data.medicines) { allMeds = data.medicines.map(m => ({ name: m.name, gen: m.generic, price: parseFloat(m.price), min: parseInt(m.minQty), cat: m.category || "General", img: m.image || "" })); render(); } } catch (e) { console.log("Load failed"); } }
+        // দ্রুত লোড করার জন্য ক্যাশিং ফাংশন
+        async function loadData() { 
+            const cachedData = localStorage.getItem('medsCache');
+            if(cachedData) {
+                allMeds = JSON.parse(cachedData);
+                render();
+            }
+
+            try { 
+                const res = await fetch(SCRIPT_URL + "?action=getData"); 
+                const data = await res.json(); 
+                if(data.medicines) { 
+                    allMeds = data.medicines.map(m => ({ 
+                        name: m.name, gen: m.generic, 
+                        price: parseFloat(m.price), 
+                        min: parseInt(m.minQty), 
+                        cat: m.category || "General", 
+                        img: m.image || "" 
+                    })); 
+                    localStorage.setItem('medsCache', JSON.stringify(allMeds));
+                    render(); 
+                } 
+            } catch (e) { console.log("Fetch Error"); } 
+        }
         
-        function render() { const container = document.getElementById('listContainer'); const banner = document.getElementById('stockBanner'); const query = document.getElementById('searchBar').value.toLowerCase(); banner.style.display = stockMode ? "block" : "none"; let list = stockMode ? allMeds.filter(m => selectedStock.includes(m.name)) : allMeds; if(query) list = list.filter(m => m.name.toLowerCase().includes(query) || m.gen.toLowerCase().includes(query)); let html = ""; const categories = [...new Set(list.map(m => m.cat))]; categories.forEach(cat => { html += `<h3 style="font-size:0.75rem; color:var(--primary); text-transform:uppercase; margin: 25px 0 12px 5px;">${cat}</h3>`; list.filter(m => m.cat === cat).forEach(m => { html += `<div class="med-item" onclick="showDetails('${m.name}')"><img src="${m.img || 'https://via.placeholder.com/100'}" class="med-img"><div class="med-content"><span class="med-name">${m.name}</span><span class="generic-name">${m.gen}</span></div><div style="text-align:right;"><div class="price-tag">£${(m.price * m.min).toFixed(2)}</div><div style="font-size:10px; opacity:0.6;">per strip</div></div></div>`; }); }); container.innerHTML = html || `<p style='text-align:center; opacity:0.3; margin-top:50px;'>No Items Found</p>`; }
+        function render() { 
+            const container = document.getElementById('listContainer'); 
+            const banner = document.getElementById('stockBanner'); 
+            const query = document.getElementById('searchBar').value.toLowerCase(); 
+            banner.style.display = stockMode ? "block" : "none"; 
+            let list = stockMode ? allMeds.filter(m => selectedStock.includes(m.name)) : allMeds; 
+            if(query) list = list.filter(m => m.name.toLowerCase().includes(query) || m.gen.toLowerCase().includes(query)); 
+            
+            let html = ""; 
+            const categories = [...new Set(list.map(m => m.cat))]; 
+            categories.forEach(cat => { 
+                html += `<h3 style="font-size:0.75rem; color:var(--primary); text-transform:uppercase; margin: 25px 0 12px 5px;">${cat}</h3>`; 
+                list.filter(m => m.cat === cat).forEach(m => { 
+                    html += `<div class="med-item" onclick="showDetails('${m.name}')"><img src="${m.img || 'https://via.placeholder.com/100'}" class="med-img" loading="lazy"><div class="med-content"><span class="med-name">${m.name}</span><span class="generic-name">${m.gen}</span></div><div style="text-align:right;"><div class="price-tag">£${(m.price * m.min).toFixed(2)}</div><div style="font-size:10px; opacity:0.6;">per strip</div></div></div>`; 
+                }); 
+            }); 
+            container.innerHTML = html || `<p style='text-align:center; opacity:0.3; margin-top:50px;'>No Items Found</p>`; 
+        }
         
+        // Login System
+        function openLogin() { document.getElementById('loginOverlay').style.display = 'flex'; }
+        function closeLogin() { document.getElementById('loginOverlay').style.display = 'none'; }
+        
+        function checkLogin() {
+            const u = document.getElementById('admUser').value;
+            const p = document.getElementById('admPass').value;
+            if(u === "hasib" && p === "68") {
+                closeLogin();
+                document.getElementById('adminPanel').style.display = "block"; 
+                updateAdminBtnUI(); renderAdminStock(); window.scrollTo(0,0);
+            } else {
+                alert("Incorrect Login Details!");
+            }
+        }
+
         function renderAdminStock() { const listDiv = document.getElementById('adminStockList'); listDiv.innerHTML = allMeds.map((m, i) => `<div class="stock-item-row"><label style="display:flex; align-items:center; gap:10px; flex:1;"><input type="checkbox" ${selectedStock.includes(m.name)?'checked':''} onchange="toggleItem('${m.name}')"><span>${m.name}</span></label><span class="edit-badge" onclick="editMed(${i})">Edit</span></div>`).join(''); }
         function toggleItem(name) { if(selectedStock.includes(name)) selectedStock = selectedStock.filter(n => n !== name); else selectedStock.push(name); localStorage.setItem('selectedStock', JSON.stringify(selectedStock)); render(); }
         function toggleStockMode() { stockMode = !stockMode; localStorage.setItem('stockMode', stockMode); updateAdminBtnUI(); render(); }
@@ -168,7 +222,6 @@
             const itemsPrice = totalTabs * currentViewMed.price; 
             const delCost = parseFloat(document.getElementById('deliveryOption').value);
             const grandTotal = itemsPrice + delCost;
-
             document.getElementById('modalImg').src = currentViewMed.img || 'https://via.placeholder.com/100'; 
             document.getElementById('modalBrand').innerText = currentViewMed.name; 
             document.getElementById('modalGen').innerText = currentViewMed.gen; 
@@ -191,30 +244,9 @@
             else { window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank'); }
         }
 
-        async function saveMed() { const data = { name: document.getElementById('newName').value, gen: document.getElementById('newGen').value, image: document.getElementById('newImg').value, price: document.getElementById('newPrice').value, min: document.getElementById('newMin').value, cat: document.getElementById('newCat').value }; await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) }); alert("Data Saved Successfully!"); location.reload(); }
+        async function saveMed() { const data = { name: document.getElementById('newName').value, gen: document.getElementById('newGen').value, image: document.getElementById('newImg').value, price: document.getElementById('newPrice').value, min: document.getElementById('newMin').value, cat: document.getElementById('newCat').value }; await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) }); localStorage.removeItem('medsCache'); alert("Saved!"); location.reload(); }
         function editMed(i) { const m = allMeds[i]; document.getElementById('newName').value = m.name; document.getElementById('newGen').value = m.gen; document.getElementById('newImg').value = m.img; document.getElementById('newPrice').value = m.price; document.getElementById('newMin').value = m.min; document.getElementById('newCat').value = m.cat; }
         function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
-        
-        /* Admin Login Logic */
-        function showLogin() { 
-            document.getElementById('loginOverlay').style.display = 'flex'; 
-            document.getElementById('adminUser').focus();
-        }
-        function closeLogin() { document.getElementById('loginOverlay').style.display = 'none'; }
-        function checkAdmin() {
-            const user = document.getElementById('adminUser').value;
-            const pass = document.getElementById('adminPass').value;
-            // Admin Credential check
-            if(user === "Hasib" && pass === "68") {
-                closeLogin();
-                document.getElementById('adminPanel').style.display = "block";
-                updateAdminBtnUI();
-                renderAdminStock();
-                window.scrollTo(0,0);
-            } else {
-                alert("Invalid Username or Password!");
-            }
-        }
         function closeAdmin() { document.getElementById('adminPanel').style.display = "none"; }
         
         loadData();
