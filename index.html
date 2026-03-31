@@ -10,7 +10,6 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             background-color: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; padding: 15px; margin: 0; background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #030712 100%); min-height: 100vh; display: flex; flex-direction: column; align-items: center;
-            /* iOS Smooth Scrolling */
             -webkit-overflow-scrolling: touch;
         }
         
@@ -21,16 +20,15 @@
         .brand-tagline { font-size: 12px; color: var(--secondary); letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
 
         .admin-box { display:none; background:var(--card); width:100%; max-width:550px; padding:20px; border-radius:24px; margin-bottom:20px; border:1px solid var(--primary); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-        .admin-box input, .admin-box select { width:100%; padding:10px; margin-bottom:8px; border-radius:10px; border:1px solid #1f2937; background:#030712; color:white; outline:none; font-size: 16px; /* Prevents zoom on focus */}
+        .admin-box input, .admin-box select { width:100%; padding:10px; margin-bottom:8px; border-radius:10px; border:1px solid #1f2937; background:#030712; color:white; outline:none; font-size: 16px; }
         .stock-row { display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #1f2937; align-items:center; }
 
         #stockBanner { display: none; width: 100%; max-width: 550px; background: linear-gradient(90deg, #0ea5e9, #3b82f6); color: white; padding: 15px; border-radius: 15px; text-align: center; font-weight: 800; margin-bottom: 15px; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
 
         .search-container { width: 100%; max-width: 550px; margin: 15px 0 25px 0; position: sticky; top: 10px; z-index: 100; }
-        #searchBar { width: 100%; padding: 15px 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(17, 24, 39, 0.9); color: white; outline: none; backdrop-filter: blur(10px); font-size: 16px; /* Prevents zoom on focus */}
+        #searchBar { width: 100%; padding: 15px 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(17, 24, 39, 0.9); color: white; outline: none; backdrop-filter: blur(10px); font-size: 16px; }
 
-        /* 2-Column Grid Layout */
         #listContainer {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -100,7 +98,7 @@
     <div id="stockBanner">STOCK AVAILABLE NOW – ORDER QUICKLY!</div>
 
     <div class="search-container">
-        <input type="text" id="searchBar" placeholder="Search medicines..." oninput="render()">
+        <input type="text" id="searchBar" placeholder="Search by name or generic..." oninput="render()">
     </div>
 
     <div id="listContainer"></div>
@@ -176,15 +174,22 @@
         }
 
         function render() {
-            const query = document.getElementById('searchBar').value.toLowerCase();
+            const query = document.getElementById('searchBar').value.toLowerCase().trim();
             const list = stockMode ? allMeds.filter(m => m.isAvailable) : allMeds;
-            const filtered = list.filter(m => m.name.toLowerCase().includes(query) || m.generic.toLowerCase().includes(query));
+            
+            // Search Logic for Name and Generic
+            const filtered = list.filter(m => 
+                m.name.toLowerCase().includes(query) || 
+                m.generic.toLowerCase().includes(query)
+            );
+
             document.getElementById('stockBanner').style.display = stockMode ? 'block' : 'none';
             document.getElementById('listContainer').innerHTML = filtered.map(m => `
                 <div class="med-item" onclick="openMed('${m.name}')">
                     <img src="${m.image}" class="med-img">
                     <div style="width:100%;">
                         <div class="med-name">${m.name}</div>
+                        <div style="font-size: 10px; color: var(--secondary); margin-bottom: 4px;">${m.generic}</div>
                         <div class="price-tag">£${(m.price * m.minQty).toFixed(2)}</div>
                     </div>
                 </div>`).join('');
