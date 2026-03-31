@@ -2,13 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>RestEasy Pharma - UK Sleep Care</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #030712; --card: #111827; --primary: #0ea5e9; --secondary: #94a3b8; --text: #f8fafc; --danger: #ef4444; --success: #22c55e; --whatsapp: #25d366; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; padding: 15px; margin: 0; background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #030712 100%); min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+        body { 
+            background-color: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; padding: 15px; margin: 0; background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #030712 100%); min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+            /* iOS Smooth Scrolling */
+            -webkit-overflow-scrolling: touch;
+        }
         
         .brand-header { text-align: center; padding: 30px 0 15px 0; width: 100%; cursor: pointer; user-select: none; }
         .logo-box { width: 70px; height: 70px; background: linear-gradient(135deg, #3b82f6, #0ea5e9); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; box-shadow: 0 0 25px rgba(14, 165, 233, 0.3); }
@@ -16,23 +20,30 @@
         .brand-name { font-size: 28px; font-weight: 800; margin: 0; }
         .brand-tagline { font-size: 12px; color: var(--secondary); letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
 
-        /* Admin Styles */
         .admin-box { display:none; background:var(--card); width:100%; max-width:550px; padding:20px; border-radius:24px; margin-bottom:20px; border:1px solid var(--primary); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-        .admin-box input, .admin-box select { width:100%; padding:10px; margin-bottom:8px; border-radius:10px; border:1px solid #1f2937; background:#030712; color:white; outline:none; }
+        .admin-box input, .admin-box select { width:100%; padding:10px; margin-bottom:8px; border-radius:10px; border:1px solid #1f2937; background:#030712; color:white; outline:none; font-size: 16px; /* Prevents zoom on focus */}
         .stock-row { display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #1f2937; align-items:center; }
 
         #stockBanner { display: none; width: 100%; max-width: 550px; background: linear-gradient(90deg, #0ea5e9, #3b82f6); color: white; padding: 15px; border-radius: 15px; text-align: center; font-weight: 800; margin-bottom: 15px; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
 
         .search-container { width: 100%; max-width: 550px; margin: 15px 0 25px 0; position: sticky; top: 10px; z-index: 100; }
-        #searchBar { width: 100%; padding: 15px 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(17, 24, 39, 0.9); color: white; outline: none; backdrop-filter: blur(10px); }
+        #searchBar { width: 100%; padding: 15px 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(17, 24, 39, 0.9); color: white; outline: none; backdrop-filter: blur(10px); font-size: 16px; /* Prevents zoom on focus */}
 
-        .med-item { background: var(--card); margin-bottom: 10px; padding: 12px; border-radius: 18px; display: flex; align-items: center; gap: 12px; border: 1px solid rgba(255,255,255,0.03); cursor: pointer; }
-        .med-img { width: 55px; height: 55px; border-radius: 12px; object-fit: cover; }
-        .med-name { font-weight: 700; color: #fff; font-size: 1rem; }
-        .price-tag { color: var(--primary); font-weight: 800; font-size: 1.1rem; }
+        /* 2-Column Grid Layout */
+        #listContainer {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 550px;
+        }
 
-        /* Modal & Calc Box */
+        .med-item { background: var(--card); padding: 15px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid rgba(255,255,255,0.03); cursor: pointer; }
+        .med-img { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; margin-bottom: 10px; }
+        .med-name { font-weight: 700; color: #fff; font-size: 0.9rem; display: block; }
+        .price-tag { color: var(--primary); font-weight: 800; font-size: 1rem; margin-top: 5px; }
+
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(6px); padding: 20px; }
         .modal-card { background: #111827; width: 100%; max-width: 380px; padding: 25px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
         .calc-box { background: rgba(255,255,255,0.04); padding: 18px; border-radius: 22px; margin: 15px 0; text-align: left; }
@@ -42,7 +53,6 @@
         .qty-selector { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 15px; }
         .qty-btn { background: var(--primary); color: #000; border: none; width: 35px; height: 35px; border-radius: 10px; font-weight: 800; cursor: pointer; }
 
-        /* Cart UI */
         .cart-float { position: fixed; bottom: 25px; right: 25px; background: var(--primary); width: 60px; height: 60px; border-radius: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.4); z-index: 900; cursor: pointer; }
         .cart-count { position: absolute; top: -5px; right: -5px; background: var(--danger); width: 22px; height: 22px; border-radius: 11px; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
         .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 400px; height: 100%; background: #0b0f1a; z-index: 1500; transition: 0.3s; padding: 25px; display: flex; flex-direction: column; }
@@ -93,7 +103,7 @@
         <input type="text" id="searchBar" placeholder="Search medicines..." oninput="render()">
     </div>
 
-    <div id="listContainer" style="width:100%; max-width:550px;"></div>
+    <div id="listContainer"></div>
 
     <div class="cart-float" onclick="toggleCart()">
         <span style="font-size: 24px;">🛒</span>
@@ -142,7 +152,6 @@
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzXI7ho9lbhdWEYHMxxpGruUDYfPO8CznBpA9I2Cow47QYDgzszmEC2fiIWBt-gxJ2c/exec';
         let allMeds = [], cart = [], stockMode = false, currentMed = null, stripQty = 1;
 
-        // Admin Trigger Logic (4 Clicks)
         let clickCount = 0;
         let clickTimer;
         function adminTrigger() {
@@ -174,8 +183,10 @@
             document.getElementById('listContainer').innerHTML = filtered.map(m => `
                 <div class="med-item" onclick="openMed('${m.name}')">
                     <img src="${m.image}" class="med-img">
-                    <div style="flex:1;"><b>${m.name}</b><br><small style="color:var(--secondary)">${m.generic}</small></div>
-                    <div class="price-tag">£${(m.price * m.minQty).toFixed(2)}</div>
+                    <div style="width:100%;">
+                        <div class="med-name">${m.name}</div>
+                        <div class="price-tag">£${(m.price * m.minQty).toFixed(2)}</div>
+                    </div>
                 </div>`).join('');
         }
 
@@ -227,22 +238,16 @@
         
         function checkout(type) {
             if(!cart.length) return alert("Cart is empty!");
-            
             const subtotal = document.getElementById('cartSubtotal').innerText;
             const delText = document.getElementById('cartDelivery').options[document.getElementById('cartDelivery').selectedIndex].text;
             const deliveryCharge = "£" + parseFloat(document.getElementById('cartDelivery').value).toFixed(2);
             const grandTotal = document.getElementById('cartGrandTotal').innerText;
-            
-            // Item wise detailed price calculation for the message
             let itemsDetails = cart.map(c => `• ${c.name}: ${c.strips} Strip(s) (${c.totalTabs} Tabs) = £${c.finalPrice.toFixed(2)}`).join('\n');
-            
             const msg = `NEW ORDER REQUEST\n\nOrder Details:\n${itemsDetails}\n\n--------------------\nItems Subtotal: ${subtotal}\nDelivery: ${delText} (${deliveryCharge})\n--------------------\nGRAND TOTAL: ${grandTotal}`;
-            
             const link = type === 'tg' ? `https://t.me/resteasypharma` : `https://wa.me/447453383721`;
             window.open(link + `?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        // Admin Functions
         function openLogin() { document.getElementById('loginOverlay').style.display = 'flex'; }
         function checkLogin() {
             if(document.getElementById('admPass').value === "68") {
