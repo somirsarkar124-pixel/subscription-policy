@@ -13,20 +13,37 @@
             -webkit-overflow-scrolling: touch;
         }
         
-        .brand-header { text-align: center; padding: 30px 0 15px 0; width: 100%; cursor: pointer; user-select: none; }
+        .brand-header { text-align: center; padding: 30px 0 10px 0; width: 100%; cursor: pointer; user-select: none; }
         .logo-box { width: 70px; height: 70px; background: linear-gradient(135deg, #3b82f6, #0ea5e9); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; box-shadow: 0 0 25px rgba(14, 165, 233, 0.3); }
         .logo-box span { font-size: 40px; font-weight: 800; color: white; }
         .brand-name { font-size: 28px; font-weight: 800; margin: 0; }
         .brand-tagline { font-size: 12px; color: var(--secondary); letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
 
+        /* Trading Hours Box */
+        .info-panel {
+            background: rgba(17, 24, 39, 0.6);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 15px;
+            width: 100%;
+            max-width: 550px;
+            margin: 15px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 11px;
+            text-align: center;
+        }
+        .info-item b { color: var(--primary); display: block; text-transform: uppercase; margin-bottom: 3px; font-size: 10px; }
+        .info-item span { color: var(--text); font-weight: 600; }
+
         .admin-box { display:none; background:var(--card); width:100%; max-width:550px; padding:20px; border-radius:24px; margin-bottom:20px; border:1px solid var(--primary); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
         .admin-box input, .admin-box select { width:100%; padding:10px; margin-bottom:8px; border-radius:10px; border:1px solid #1f2937; background:#030712; color:white; outline:none; font-size: 16px; }
-        .stock-row { display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #1f2937; align-items:center; }
-
+        
         #stockBanner { display: none; width: 100%; max-width: 550px; background: linear-gradient(90deg, #0ea5e9, #3b82f6); color: white; padding: 15px; border-radius: 15px; text-align: center; font-weight: 800; margin-bottom: 15px; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
 
-        .search-container { width: 100%; max-width: 550px; margin: 15px 0 25px 0; position: sticky; top: 10px; z-index: 100; }
+        .search-container { width: 100%; max-width: 550px; margin: 5px 0 25px 0; position: sticky; top: 10px; z-index: 100; }
         #searchBar { width: 100%; padding: 15px 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(17, 24, 39, 0.9); color: white; outline: none; backdrop-filter: blur(10px); font-size: 16px; }
 
         #listContainer {
@@ -37,7 +54,8 @@
             max-width: 550px;
         }
 
-        .med-item { background: var(--card); padding: 15px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid rgba(255,255,255,0.03); cursor: pointer; }
+        .med-item { background: var(--card); padding: 15px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; text-align: center; border: 1px solid rgba(255,255,255,0.03); cursor: pointer; transition: transform 0.2s; }
+        .med-item:active { transform: scale(0.95); }
         .med-img { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; margin-bottom: 10px; }
         .med-name { font-weight: 700; color: #fff; font-size: 0.9rem; display: block; }
         .price-tag { color: var(--primary); font-weight: 800; font-size: 1rem; margin-top: 5px; }
@@ -66,6 +84,21 @@
         <div class="logo-box"><span>R</span></div>
         <h1 class="brand-name">RestEasy Pharma</h1>
         <div class="brand-tagline">— UK PHARMACY SLEEP CARE —</div>
+    </div>
+
+    <div class="info-panel">
+        <div class="info-item">
+            <b>Order Window</b>
+            <span>11:00 AM – 12:00 PM</span>
+        </div>
+        <div class="info-item">
+            <b>Operating Days</b>
+            <span>Mon – Fri</span>
+        </div>
+        <div class="info-item" style="grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; margin-top: 5px;">
+            <b style="display:inline; color:var(--danger);">Non-Working Days:</b>
+            <span style="color:var(--secondary);">Saturday & Sunday</span>
+        </div>
     </div>
 
     <div id="loginOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
@@ -177,7 +210,6 @@
             const query = document.getElementById('searchBar').value.toLowerCase().trim();
             const list = stockMode ? allMeds.filter(m => m.isAvailable) : allMeds;
             
-            // Search Logic for Name and Generic
             const filtered = list.filter(m => 
                 m.name.toLowerCase().includes(query) || 
                 m.generic.toLowerCase().includes(query)
